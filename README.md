@@ -430,13 +430,20 @@ npm run dev
 
 ## Git 命令大全（新手必读）
 
+> **本仓库信息**
+> - 仓库地址：`https://github.com/LING71671/enterprise-management-system.git`
+> - 默认分支：`main`
+> - 项目路径：`web/`
+
+---
+
 ### 基础配置（首次使用必做）
 
 ```bash
-# 设置用户名
+# 设置用户名（改成你自己的）
 git config --global user.name "你的名字"
 
-# 设置邮箱
+# 设置邮箱（改成你自己的）
 git config --global user.email "你的邮箱@example.com"
 
 # 查看当前配置
@@ -448,14 +455,14 @@ git config --global init.defaultBranch main
 
 ---
 
-### 克隆项目
+### 克隆本项目
 
 ```bash
-# 克隆远程仓库到本地
-git clone https://github.com/用户名/仓库名.git
+# 克隆本项目到本地
+git clone https://github.com/LING71671/enterprise-management-system.git
 
-# 克隆到指定文件夹
-git clone https://github.com/用户名/仓库名.git 文件夹名
+# 进入项目目录
+cd enterprise-management-system/web
 ```
 
 ---
@@ -479,7 +486,7 @@ git log --oneline
 git log -3
 
 # 查看某个文件的修改历史
-git log --follow 文件路径
+git log --follow src/assets/css/pages/production.css
 
 # 查看文件具体修改内容
 git diff
@@ -503,34 +510,47 @@ git branch -r
 git branch -a
 
 # 创建新分支
-git branch 分支名
+git branch feature/my-feature
 
 # 切换分支
-git checkout 分支名
+git checkout main
 
 # 创建并切换到新分支（推荐）
-git checkout -b 分支名
+git checkout -b feature/my-feature
 
-# 例如：创建功能分支
-git checkout -b feature/production-plan
+# ===== 本项目推荐的分支命名 =====
 
-# 例如：创建修复分支
-git checkout -b fix/login-bug
+# 功能分支
+git checkout -b feature/production-plan      # 生产计划管理功能
+git checkout -b feature/sales-customer       # 客户信息管理功能
+git checkout -b feature/equipment-monitor    # 设备监控功能
+
+# 修复分支
+git checkout -b fix/login-error              # 修复登录问题
+git checkout -b fix/style-button             # 修复按钮样式
+
+# 样式调整分支
+git checkout -b style/dashboard-layout       # 调整仪表盘布局
+
+# 文档分支
+git checkout -b docs/api-guide               # 更新API文档
+
+# ===== 分支管理 =====
 
 # 删除本地分支
-git branch -d 分支名
+git branch -d feature/my-feature
 
 # 强制删除分支（如果分支未合并）
-git branch -D 分支名
+git branch -D feature/my-feature
 
 # 删除远程分支
-git push origin --delete 分支名
+git push origin --delete feature/my-feature
 
 # 重命名分支
-git branch -m 旧分支名 新分支名
+git branch -m feature/old-name feature/new-name
 
 # 合并分支到当前分支
-git merge 分支名
+git merge feature/my-feature
 ```
 
 ---
@@ -539,10 +559,10 @@ git merge 分支名
 
 ```bash
 # 添加单个文件到暂存区
-git add 文件名
+git add src/assets/css/pages/production.css
 
 # 添加多个文件
-git add 文件1 文件2 文件3
+git add src/assets/css/pages/production.css src/assets/js/modules/production.js
 
 # 添加所有修改的文件（推荐）
 git add .
@@ -554,52 +574,48 @@ git add -A
 git add -u
 
 # 提交暂存区的文件
-git commit -m "提交说明"
+git commit -m "feat: 添加生产计划管理页面样式"
 
-# 添加并提交（合并写法）
-git commit -am "提交说明"
+# 添加并提交（合并写法，仅适用于已跟踪文件）
+git commit -am "fix: 修复生产管理页面样式问题"
 
-# 修改上一次提交信息（未push时）
-git commit --amend -m "新的提交信息"
-
-# 跳过暂存直接提交所有已跟踪文件
-git commit -a -m "提交说明"
+# 修改上一次提交信息（未push时使用）
+git commit --amend -m "feat: 添加生产计划管理页面完整样式"
 ```
 
 ---
 
-### 推送和拉取
+### 推送和拉取（本项目专用）
 
 ```bash
-# 推送当前分支到远程
+# ===== 推送到本项目远程仓库 =====
+
+# 推送当前分支到远程（已设置上游分支后使用）
 git push
 
 # 首次推送并设置上游分支（推荐）
-git push -u origin 分支名
+git push -u origin feature/my-feature
 
-# 推送到指定远程分支
-git push origin 分支名
+# 推送到 main 分支
+git push origin main
 
-# 强制推送（危险操作，慎用）
-git push -f origin 分支名
+# 推送到指定分支
+git push origin feature/production-plan
 
-# 拉取远程代码并合并
+
+# ===== 从本项目拉取更新 =====
+
+# 拉取 main 分支最新代码
+git pull origin main
+
+# 拉取当前分支最新代码
 git pull
-
-# 拉取指定远程分支
-git pull origin 分支名
 
 # 拉取但不合并（只下载）
 git fetch origin
 
 # 查看远程仓库信息
 git remote -v
-
-# 添加远程仓库
-git remote add origin https://github.com/用户名/仓库名.git
-
-# 修改远程仓库地址
-git remote set-url origin 新地址
 ```
 
 ---
@@ -607,14 +623,14 @@ git remote set-url origin 新地址
 ### 撤销操作
 
 ```bash
-# 撤销工作区的修改（丢弃修改）
-git checkout -- 文件名
+# 撤销工作区的修改（丢弃修改，危险操作）
+git checkout -- src/assets/css/pages/production.css
 
 # 撤销所有工作区修改
 git checkout -- .
 
-# 撤销暂存区的文件（取消add）
-git reset HEAD 文件名
+# 撤销暂存区的文件（取消 add）
+git reset HEAD src/assets/css/pages/production.css
 
 # 撤销所有暂存
 git reset HEAD
@@ -622,20 +638,20 @@ git reset HEAD
 # 撤销最近一次提交（保留修改）
 git reset --soft HEAD~1
 
-# 撤销最近一次提交（不保留修改）
+# 撤销最近一次提交（不保留修改，危险操作）
 git reset --hard HEAD~1
 
 # 撤销最近两次提交
 git reset --hard HEAD~2
 
 # 回退到指定提交
-git reset --hard 提交ID
+git reset --hard e2d466e
 
 # 查看已删除的提交（用于恢复）
 git reflog
 
 # 恢复误删的提交
-git reset --hard 提交ID
+git reset --hard e2d466e
 ```
 
 ---
@@ -647,7 +663,7 @@ git reset --hard 提交ID
 git stash
 
 # 暂存并添加说明
-git stash save "说明信息"
+git stash save "生产计划页面样式开发中"
 
 # 查看暂存列表
 git stash list
@@ -677,7 +693,7 @@ git stash clear
 git tag v1.0.0
 
 # 创建带说明的标签
-git tag -a v1.0.0 -m "版本1.0.0发布"
+git tag -a v1.0.0 -m "企业管理系统前端 v1.0.0 发布"
 
 # 查看所有标签
 git tag
@@ -710,76 +726,124 @@ git status
 git add 冲突文件名
 
 # 提交合并结果
-git commit -m "解决合并冲突"
+git commit -m "fix: 解决生产管理页面样式合并冲突"
 
 # 取消合并
 git merge --abort
 
 # 使用 ours 策略（保留当前分支）
-git checkout --ours 冲突文件
+git checkout --ours src/assets/css/pages/production.css
 
 # 使用 theirs 策略（保留合并分支）
-git checkout --theirs 冲突文件
+git checkout --theirs src/assets/css/pages/production.css
 ```
 
 ---
 
-### 其他常用命令
+### 团队协作完整流程（本项目专用）
+
+#### 场景一：新人首次参与开发
 
 ```bash
-# 查看文件内容（Git历史版本）
-git show 提交ID:文件路径
+# 1. 克隆项目
+git clone https://github.com/LING71671/enterprise-management-system.git
+cd enterprise-management-system/web
 
-# 搜索提交内容
-git log -S "搜索内容"
+# 2. 安装依赖
+npm install
 
-# 查看某行代码的修改历史
-git blame 文件名
+# 3. 创建自己的功能分支
+git checkout -b feature/production-plan
 
-# 清理未跟踪的文件
-git clean -fd
+# 4. 开发代码...
 
-# 压缩最近N次提交为一次
-git rebase -i HEAD~N
+# 5. 查看修改
+git status
 
-# 只拉取某个文件
-git checkout origin/分支名 -- 文件路径
-
-# 比较两个分支的差异
-git diff 分支1 分支2
-
-# 比较两个分支的文件差异
-git diff 分支1 分支2 文件路径
-```
-
----
-
-### 团队协作工作流
-
-```bash
-# 第一步：克隆项目（首次）
-git clone https://github.com/用户名/项目名.git
-cd 项目名
-
-# 第二步：创建自己的功能分支
-git checkout -b feature/功能名称
-
-# 第三步：开发代码，定期提交
+# 6. 添加修改
 git add .
-git commit -m "feat: 添加xxx功能"
 
-# 第四步：推送分支到远程
-git push -u origin feature/功能名称
+# 7. 提交修改
+git commit -m "feat: 完成生产计划管理页面基础结构"
 
-# 第五步：在 GitHub 上创建 Pull Request
+# 8. 推送到远程
+git push -u origin feature/production-plan
 
-# 第六步：代码审查通过后合并
+# 9. 在 GitHub 上创建 Pull Request
+# 访问: https://github.com/LING71671/enterprise-management-system
+# 点击 "New Pull Request"
 
-# 第七步：删除已合并的分支
+# 10. 等待代码审查通过后合并
+```
+
+#### 场景二：日常开发流程
+
+```bash
+# 1. 每天开始工作前，先拉取最新代码
 git checkout main
 git pull origin main
-git branch -d feature/功能名称
-git push origin --delete feature/功能名称
+
+# 2. 创建或切换到功能分支
+git checkout -b feature/sales-customer
+# 或者继续之前的分支
+git checkout feature/sales-customer
+
+# 3. 开发代码...
+
+# 4. 定期提交（小步提交）
+git add src/pages/sales/customer.html
+git commit -m "feat: 添加客户信息管理页面结构"
+
+git add src/assets/css/pages/sales.css
+git commit -m "feat: 添加销售管理页面样式"
+
+# 5. 推送到远程
+git push origin feature/sales-customer
+
+# 6. 创建 Pull Request 并等待合并
+```
+
+#### 场景三：合并后清理分支
+
+```bash
+# 1. 切换到 main 分支
+git checkout main
+
+# 2. 拉取最新代码
+git pull origin main
+
+# 3. 删除本地已合并的分支
+git branch -d feature/production-plan
+
+# 4. 删除远程已合并的分支
+git push origin --delete feature/production-plan
+```
+
+#### 场景四：解决 main 分支冲突
+
+```bash
+# 1. 切换到 main 分支，拉取最新
+git checkout main
+git pull origin main
+
+# 2. 切换回功能分支
+git checkout feature/production-plan
+
+# 3. 合并 main 到功能分支
+git merge main
+
+# 4. 如果有冲突，解决冲突
+# 打开冲突文件，找到 <<<<<<< HEAD ====== >>>>>>> main 标记
+# 手动编辑解决冲突
+
+# 5. 添加解决后的文件
+git add .
+
+# 6. 提交合并结果
+git commit -m "fix: 解决与 main 分支的合并冲突"
+
+# 7. 推送
+git push origin feature/production-plan
 ```
 
 ---
@@ -787,80 +851,116 @@ git push origin --delete feature/功能名称
 ### 常见问题解决
 
 #### 问题1：提交错文件了
+
 ```bash
 # 撤销最近一次提交（保留修改）
 git reset --soft HEAD~1
 
 # 重新添加正确的文件
-git add 正确的文件
-git commit -m "正确的提交信息"
+git add src/assets/css/pages/production.css
+git commit -m "feat: 添加生产计划管理页面样式"
 ```
 
-#### 问题2：push被拒绝
+#### 问题2：push 被拒绝
+
 ```bash
 # 先拉取远程更新
-git pull origin 分支名
+git pull origin main
 
 # 如果有冲突，解决后再提交
 git add .
-git commit -m "解决冲突"
-git push origin 分支名
+git commit -m "fix: 解决合并冲突"
+git push origin main
 ```
 
 #### 问题3：想放弃所有本地修改
+
 ```bash
-# 重置到远程状态
+# 重置到远程 main 状态
 git fetch origin
-git reset --hard origin/分支名
+git reset --hard origin/main
 ```
 
 #### 问题4：误删了分支
+
 ```bash
 # 查看操作记录
 git reflog
 
-# 找到删除前的提交ID，恢复
-git checkout -b 分支名 提交ID
+# 找到删除前的提交 ID，恢复
+git checkout -b feature/production-plan e2d466e
 ```
 
 #### 问题5：合并了错误的分支
+
 ```bash
-# 在push之前可以撤销
+# 在 push 之前可以撤销
 git reset --hard HEAD~1
 
-# 如果已经push，需要创建新提交来撤销
-git revert -m 1 合并提交ID
+# 如果已经 push，需要创建新提交来撤销
+git revert -m 1 e2d466e
+```
+
+#### 问题6：想查看某个提交的详细内容
+
+```bash
+# 查看某个提交的内容
+git show e2d466e
+
+# 查看某个提交的某个文件
+git show e2d466e:src/assets/css/pages/production.css
 ```
 
 ---
 
-### Git 提交规范
+### Git 提交规范（本项目专用）
 
-```
-feat: 新功能
-fix: 修复 bug
-style: 样式调整（不影响代码逻辑）
-refactor: 代码重构（既不是新功能也不是修复）
-docs: 文档更新
-test: 测试相关
-chore: 构建/工具变动
-perf: 性能优化
-ci: CI/CD 配置变动
-```
-
-**提交信息示例：**
 ```bash
-# 好的提交信息
-git commit -m "feat: 添加用户登录功能"
-git commit -m "fix: 修复登录页面验证码不显示问题"
-git commit -m "style: 调整按钮样式"
-git commit -m "docs: 更新 README 安装说明"
+# 功能开发
+feat: 添加生产计划管理页面
+feat: 完成销售管理子系统客户信息模块
+feat: 实现设备状态监控数据展示
 
-# 不好的提交信息
-git commit -m "update"
-git commit -m "fix"
-git commit -m "asdfgh"
+# 修复问题
+fix: 修复登录页面验证码不显示问题
+fix: 修复侧边栏菜单点击无响应
+fix: 修复表格排序功能异常
+
+# 样式调整
+style: 调整按钮圆角和间距
+style: 优化登录页面响应式布局
+style: 统一表格样式配色
+
+# 代码重构
+refactor: 重构导航切换逻辑
+refactor: 优化表单验证代码结构
+
+# 文档更新
+docs: 更新 README 开发指南
+docs: 添加 Git 协作流程说明
+
+# 其他
+chore: 更新 .gitignore 配置
+perf: 优化表格渲染性能
 ```
+
+---
+
+### 本项目常用命令速查
+
+| 场景 | 命令 |
+|------|------|
+| 克隆项目 | `git clone https://github.com/LING71671/enterprise-management-system.git` |
+| 拉取最新 | `git pull origin main` |
+| 创建功能分支 | `git checkout -b feature/功能名` |
+| 查看状态 | `git status` |
+| 添加所有修改 | `git add .` |
+| 提交 | `git commit -m "feat: 描述"` |
+| 推送分支 | `git push -u origin feature/功能名` |
+| 切换到 main | `git checkout main` |
+| 合并 main | `git merge main` |
+| 放弃本地修改 | `git checkout -- .` |
+| 查看历史 | `git log --oneline` |
 
 ---
 
