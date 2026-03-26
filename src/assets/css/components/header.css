@@ -38,7 +38,7 @@
 }
 
 .header-logo img {
-  height: 36px;
+  height: 42px;
   width: auto;
 }
 
@@ -74,4 +74,66 @@
   justify-content: center;
   font-size: var(--font-size-sm);
   font-weight: 600;
+}
+
+/* ========== 移动端响应式样式 ========== */
+/* 汉堡菜单按钮 - 桌面端默认隐藏 */
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 24px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1002;
+}
+
+.hamburger-btn span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--color-text-primary);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  /* 移动端显示汉堡菜单按钮 */
+  .hamburger-btn {
+    display: flex;
+  }
+
+  .hamburger-btn:hover span {
+    background: var(--color-primary);
+  }
+
+  .hamburger-btn.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+
+  .hamburger-btn.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger-btn.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+  }
+
+  /* 移动端隐藏品牌名称 */
+  .header-logo .brand-name {
+    display: none;
+  }
+
+  /* 调整header右侧间距 */
+  .header-right {
+    gap: var(--spacing-sm);
+  }
+
+  /* 用户名可选择性隐藏 */
+  .header-user .username {
+    display: none;
+  }
 }

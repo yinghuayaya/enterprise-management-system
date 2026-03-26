@@ -91,3 +91,50 @@
   padding: 0 var(--spacing-sm);
   color: var(--color-text-disabled);
 }
+
+/* ========== 移动端响应式样式 ========== */
+@media (max-width: 768px) {
+  /* 主布局取消左侧边距 */
+  .layout {
+    padding-top: var(--header-height);
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: var(--spacing-md);
+  }
+
+  /* 工具栏堆叠布局 */
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+  }
+
+  .toolbar-left,
+  .toolbar-right {
+    justify-content: flex-start;
+  }
+
+  /* 搜索框响应式宽度 */
+  .search-box input {
+    width: 100%;
+  }
+
+  .search-box {
+    flex: 1;
+    max-width: 100%;
+  }
+
+  /* 页面头部堆叠 */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  /* 统计卡片单列 */
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -125,39 +125,42 @@
     </main>
   </div>
 
-  <script src="../assets/js/utils/dom.js"></script>
-  <script src="../assets/js/utils/storage.js"></script>
-  <script src="../assets/js/utils/format.js"></script>
-  <script src="../assets/js/modules/auth.js"></script>
-  <script src="../assets/js/modules/navigation.js"></script>
-  <script src="../assets/js/main.js"></script>
-  <script>
-    'use strict';
-    // 加载公共组件（带错误处理）
-    fetch('../components/header.html')
-      .then(r => { if (!r.ok) throw new Error('Header loading failed'); return r.text(); })
-      .then(html => {
-        document.getElementById('header-placeholder').innerHTML = html;
-        appNav.init();
-      })
-      .catch(err => {
-        document.getElementById('header-placeholder').innerHTML = '<div style="padding:16px;color:red;">头部加载失败</div>';
-        console.error(err);
-      });
-    fetch('../components/sidebar.html')
-      .then(r => { if (!r.ok) throw new Error('Sidebar loading failed'); return r.text(); })
-      .then(html => {
-        document.getElementById('sidebar-placeholder').innerHTML = html;
-      })
-      .catch(err => {
-        document.getElementById('sidebar-placeholder').innerHTML = '<div style="padding:16px;color:red;">侧边栏加载失败</div>';
-        console.error(err);
-      });
+<script src="../assets/js/utils/dom.js"></script>
+<script src="../assets/js/utils/storage.js"></script>
+<script src="../assets/js/utils/format.js"></script>
+<script src="../assets/js/modules/auth.js"></script>
+<script src="../assets/js/modules/navigation.js"></script>
+<script src="../assets/js/modules/mobile-nav.js"></script>
+<script src="../assets/js/main.js"></script>
+<script>
+'use strict';
+// 加载公共组件（带错误处理）
+fetch('../components/header.html')
+.then(r => { if (!r.ok) throw new Error('Header loading failed'); return r.text(); })
+.then(html => {
+  document.getElementById('header-placeholder').innerHTML = html;
+  appNav.init();
+  // 初始化移动端导航（组件加载后）
+  if (typeof MobileNav !== 'undefined') MobileNav.init();
+})
+.catch(err => {
+  document.getElementById('header-placeholder').innerHTML = '<div style="padding:16px;color:red;">头部加载失败</div>';
+  console.error(err);
+});
+fetch('../components/sidebar.html')
+.then(r => { if (!r.ok) throw new Error('Sidebar loading failed'); return r.text(); })
+.then(html => {
+  document.getElementById('sidebar-placeholder').innerHTML = html;
+})
+.catch(err => {
+  document.getElementById('sidebar-placeholder').innerHTML = '<div style="padding:16px;color:red;">侧边栏加载失败</div>';
+  console.error(err);
+});
 
-    // 欢迎语
-    const user = auth.getUser();
-    if (user) document.getElementById('welcome-name').textContent = user.username;
-    document.getElementById('welcome-time').textContent = formatDate(new Date(), 'YYYY年MM月DD日 HH:mm') + ' · 今天也是充满活力的一天';
-  </script>
+// 欢迎语
+const user = auth.getUser();
+if (user) document.getElementById('welcome-name').textContent = user.username;
+document.getElementById('welcome-time').textContent = formatDate(new Date(), 'YYYY年MM月DD日 HH:mm') + ' · 今天也是充满活力的一天';
+</script>
 </body>
 </html>

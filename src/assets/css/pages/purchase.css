@@ -91,3 +91,45 @@
   padding: 0 var(--spacing-sm);
   color: var(--color-text-disabled);
 }
+
+/* ========== 移动端响应式样式 ========== */
+@media (max-width: 768px) {
+  .layout {
+    padding-top: var(--header-height);
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: var(--spacing-md);
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+  }
+
+  .toolbar-left,
+  .toolbar-right {
+    justify-content: flex-start;
+  }
+
+  .search-box input {
+    width: 100%;
+  }
+
+  .search-box {
+    flex: 1;
+    max-width: 100%;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
