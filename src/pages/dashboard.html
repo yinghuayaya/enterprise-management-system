@@ -135,22 +135,34 @@
 <script>
 'use strict';
 // 加载公共组件（带错误处理）
+let headerLoaded = false;
+let sidebarLoaded = false;
+
+function tryInitMobileNav() {
+  if (headerLoaded && sidebarLoaded) {
+    if (typeof MobileNav !== 'undefined') MobileNav.init();
+  }
+}
+
 fetch('../components/header.html')
 .then(r => { if (!r.ok) throw new Error('Header loading failed'); return r.text(); })
 .then(html => {
   document.getElementById('header-placeholder').innerHTML = html;
   appNav.init();
-  // 初始化移动端导航（组件加载后）
-  if (typeof MobileNav !== 'undefined') MobileNav.init();
+  headerLoaded = true;
+  tryInitMobileNav();
 })
 .catch(err => {
   document.getElementById('header-placeholder').innerHTML = '<div style="padding:16px;color:red;">头部加载失败</div>';
   console.error(err);
 });
+
 fetch('../components/sidebar.html')
 .then(r => { if (!r.ok) throw new Error('Sidebar loading failed'); return r.text(); })
 .then(html => {
   document.getElementById('sidebar-placeholder').innerHTML = html;
+  sidebarLoaded = true;
+  tryInitMobileNav();
 })
 .catch(err => {
   document.getElementById('sidebar-placeholder').innerHTML = '<div style="padding:16px;color:red;">侧边栏加载失败</div>';

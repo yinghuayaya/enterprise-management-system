@@ -65,16 +65,28 @@
 <script src="../../assets/js/modules/mobile-nav.js"></script>
 <script src="../../assets/js/main.js"></script>
   <script src="../../data/purchase.js"></script>
-  <script>
-    'use strict';
+<script>
+'use strict';
+let headerLoaded = false;
+let sidebarLoaded = false;
+
+function tryInitMobileNav() {
+  if (headerLoaded && sidebarLoaded) {
+    if (typeof MobileNav !== 'undefined') MobileNav.init();
+  }
+}
+
 fetch('../../components/header.html').then(r => r.text()).then(html => {
   document.getElementById('header-placeholder').innerHTML = html;
   appNav.init();
-  if (typeof MobileNav !== 'undefined') MobileNav.init();
+  headerLoaded = true;
+  tryInitMobileNav();
 });
-    fetch('../../components/sidebar.html').then(r => r.text()).then(html => {
-      document.getElementById('sidebar-placeholder').innerHTML = html;
-    });
+fetch('../../components/sidebar.html').then(r => r.text()).then(html => {
+  document.getElementById('sidebar-placeholder').innerHTML = html;
+  sidebarLoaded = true;
+  tryInitMobileNav();
+});
 
     const { suppliers, orders, analysis } = purchaseData;
     const totalAmount = orders.reduce((s, o) => s + o.amount, 0);

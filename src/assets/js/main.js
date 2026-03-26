@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
     auth.guard();
     // appNav.init() 在每个页面的 fetch header 回调里执行了，这里可以不强制，但防止遗漏保留
     if (typeof appNav !== 'undefined') appNav.init();
+    // 初始化移动端导航（侧边栏切换）
+    if (typeof MobileNav !== 'undefined') MobileNav.init();
   }
 
   // 初始化鼠标跟随动效
