@@ -14,7 +14,7 @@
 <header id="navbar">
     <div class="navbar-container container">
         <!--logo(a；超链接）-->
-        <a href="#" class="navbar-brand">
+        <a href="#hero" class="navbar-brand">
             <!-- href="#" = 假链接、占位用，点击回顶部-->
             <img src="../assets/images/logo.png" alt="小麦科技">
             <span>小麦科技</span>
@@ -23,7 +23,7 @@
         <!--导航栏（nav：专用导航盒子）-->
         <nav class="navbar-nav">
             <!--class="navbar-nav"：导航链接横排（默认为竖排）-->
-            <a href="#">首页</a>
+            <a href="#about">首页</a>
             <!--href="#"：点击 滚到页面顶部-->
             <a href="#products">产品</a>
             <!-- href="#products"：点击 滚到页面指定区域products 下面类似-->
@@ -81,17 +81,20 @@
         <p class="section-subtitle">持续投入研发，打造领先的技术能力。</p>
         <div class="tech-grid">
             <div class="tech-card">
-                <img src="../assets/images/tech/tech-1.png" alt="AI智能引擎" style="height: 120px; object-fit: contain; margin-bottom: 24px;display: block;margin-left: auto; margin-right: auto;">
+                <img src="../assets/images/tech/tech-1.png" alt="AI智能引擎"
+                     style="height: 120px; object-fit: contain; margin-bottom: 24px;display: block;margin-left: auto; margin-right: auto;">
                 <h3>AI智能引擎</h3>
                 <p>机器学习与自然语言处理</p>
             </div>
             <div class="tech-card">
-                <img src="../assets/images/tech/tech-2.png" alt="AI智能引擎" style="height: 120px; object-fit: contain; margin-bottom: 24px;display: block;margin-left: auto; margin-right: auto;">
+                <img src="../assets/images/tech/tech-2.png" alt="云计算平台"
+                     style="height: 120px; object-fit: contain; margin-bottom: 24px;display: block;margin-left: auto; margin-right: auto;">
                 <h3>云计算平台</h3>
                 <p>分布式架构，弹性扩展</p>
             </div>
             <div class="tech-card">
-                <img src="../assets/images/tech/tech-3.png" alt="AI智能引擎" style="height: 120px; object-fit: contain; margin-bottom: 24px;display: block;margin-left: auto; margin-right: auto;">
+                <img src="../assets/images/tech/tech-3.png" alt="大数据分析"
+                     style="height: 120px; object-fit: contain; margin-bottom: 24px;display: block;margin-left: auto; margin-right: auto;">
                 <h3>大数据分析</h3>
                 <p>实时计算与智能决策</p>
             </div>
@@ -107,13 +110,15 @@
         <div class="products-grid">
             <!-- 小麦手机 -->
             <div class="product-card">
-               <img src="../assets/images/products/product-1.jpg" alt="小麦最新手机" style="height: 180px; width: 100%; object-fit: cover; border-radius: 8px; margin-bottom: 24px;">
+                <img src="../assets/images/products/product-1.jpg" alt="小麦最新手机"
+                     style="height: 180px; width: 100%; object-fit: cover; border-radius: 8px; margin-bottom: 24px;">
                 <h3>小麦手机</h3>
                 <p>智能高效的好伙伴</p>
             </div>
             <!-- 小麦平板 -->
             <div class="product-card">
-                <img src="../assets/images/products/product-2.jpg" alt="小麦最新平板" style="height: 180px; width: 100%; object-fit: cover; border-radius: 8px; margin-bottom: 24px;">
+                <img src="../assets/images/products/product-2.jpg" alt="小麦最新平板"
+                     style="height: 180px; width: 100%; object-fit: cover; border-radius: 8px; margin-bottom: 24px;">
                 <h3>小麦平板</h3>
                 <p>追剧游戏的最佳搭档</p>
             </div>
@@ -129,7 +134,7 @@
                 <img src="../assets/images/products/product-4.jpg" alt="小麦最新台式电脑" style="height: 180px;
                 width: 100%; object-fit: cover; border-radius: 8px; margin-bottom: 24px;">
                 <h3>小麦最新台式电脑</h3>
-                <p>性能一绝的的游戏办公搭子</p>
+                <p>性能一绝的游戏办公搭子</p>
             </div>
             <!-- 小麦手表 -->
             <div class="product-card">
@@ -239,8 +244,9 @@
         <div class="founders-grid">
             <!--姚依-->
             <div class="founder-card">
-                <img src="../assets/images/founders/founder-1.jpg" onerror="alert('图片不能加载')" alt="姚 依"
-                     class="founder-photo">
+                <img src="../assets/images/founders/founder-1.jpg" alt="姚依">
+                alt="姚 依"
+                class="founder-photo">
                 <div class="image-placeholder text-sm" style="height:250px;width:100%;margin-bottom:16px;">
                 </div>
                 <h3>姚 依</h3>
@@ -250,7 +256,7 @@
             </div>
             <!--凌清杨-->
             <div class="founder-card">
-                <img src="../assets/images/founders/founder-2.jpg" onerror="alert('图片不能加载')" alt="凌清杨"
+                <img src="../assets/images/founders/founder-2.jpg" alt="凌清杨"
                      class="founder-photo">
                 <div class="image-placeholder text-sm" style="height:250px;width:100%;margin-bottom:16px;">
                 </div>
@@ -261,10 +267,9 @@
             </div>
             <!--胡庭瑜-->
             <div class="founder-card">
-                <img src="../assets/images/founders/founder-3.jpg" onerror="alert('图片不能加载')" alt="胡庭瑜"
+                <img src="../assets/images/founders/founder-3.jpg" alt="胡庭瑜"
                      class="founder-photo">
                 <div class="image-placeholder text-sm" style="height:250px;width:100%;margin-bottom:16px;">
-                    预留照片位置：创始人C(建议 500x500+)
                 </div>
                 <h3>胡庭瑜</h3>
                 <p class="founder-title">联合创始人兼首席产品官 (CPO)</p>
@@ -273,7 +278,7 @@
             </div>
             <!--开俊涵-->
             <div class="founder-card">
-                <img src="../assets/images/founders/founder-4.jpg" onerror="alert('图片不能加载')" alt="开俊涵"
+                <img src="../assets/images/founders/founder-4.jpg" alt="开俊涵"
                      class="founder-photo">
                 <div class="image-placeholder text-sm" style="height:250px;width:100%;margin-bottom:16px;">
                 </div>
@@ -298,7 +303,7 @@
     </div>
 </section>
 
-<!-- 页脚区域 -->
+<!-- 页脚区域(finished) -->
 <footer id="footer">
     <div class="container">
         <div class="footer-content">
@@ -311,7 +316,7 @@
                 <p style="font-size: 16px;">小麦科技，让科技触手可及。</p>
             </div>
             <div class="footer-links">
-                <a href="#">关于我们</a>
+                <a href="#footer">关于我们</a>
                 <a href="#products">产品服务</a>
                 <a href="#">支持与联系</a>
             </div>
