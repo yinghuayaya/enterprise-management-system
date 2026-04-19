@@ -313,7 +313,7 @@ equipmentSystem.pages = (function(store, actions, renderers, view) {
   };
 })(equipmentSystem.store, equipmentSystem.actions, equipmentSystem.renderers, EnterpriseView);
 
-// 对外暴露设备管理初始化入口，供 modules/equipment.js 调用。
+// 对外暴露设备管理初始化入口，供 module-loader.js 调用。
 equipmentSystem.init = function() {
   try {
     equipmentSystem.pages.init();

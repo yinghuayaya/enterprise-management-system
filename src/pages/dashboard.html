@@ -125,23 +125,6 @@
       </div>
     </main>
   </div>
-
-<script src="../assets/js/utils/dom.js"></script>
-<script src="../assets/js/utils/storage.js"></script>
-<script src="../assets/js/utils/format.js"></script>
-<script src="../assets/js/modules/auth.js"></script>
-<script src="../assets/js/modules/navigation.js"></script>
-<script src="../assets/js/modules/mobile-nav.js"></script>
 <script src="../assets/js/main.js"></script>
-<script>
-'use strict';
-document.addEventListener('DOMContentLoaded', () => {
-  const user = auth.getUser();
-  if (user) {
-    document.getElementById('welcome-name').textContent = user.username;
-  }
-  document.getElementById('welcome-time').textContent = formatDate(new Date(), 'YYYY年MM月DD日 HH:mm') + ' · 今天也是充满活力的一天';
-});
-</script>
 </body>
 </html>

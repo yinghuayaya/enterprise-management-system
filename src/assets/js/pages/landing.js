@@ -1,5 +1,8 @@
 'use strict';
-const landing = (function () {
+
+window.appPages = window.appPages || {};
+
+window.appPages.landing = (function () {
   /**
    * 批量为页面上所有锚点链接绑定平滑滚动事件。
    * @returns {void}
@@ -128,7 +131,3 @@ const landing = (function () {
     }
   };
 })();
-
-document.addEventListener('DOMContentLoaded', function () {
-  landing.init();
-});

@@ -46,6 +46,18 @@ const MobileNav = {
   },
 
   /**
+   * 桌面宽度下自动关闭移动端抽屉状态。
+   * @returns {void}
+   *
+   * 原因：用户旋转设备或拉宽窗口后，移动端遮罩不应继续覆盖桌面布局。
+   */
+  handleResize() {
+    if (window.innerWidth > 768 && this.isOpen) {
+      this.closeSidebar();
+    }
+  },
+
+  /**
    * 根据当前状态切换后台侧边栏开合。
    * @returns {void}
    */
@@ -81,18 +93,6 @@ const MobileNav = {
     this.hamburgerBtn.setAttribute('aria-expanded', 'false');
     this.isOpen = false;
     document.body.style.overflow = '';
-  },
-
-  /**
-   * 桌面宽度下自动关闭移动端抽屉状态。
-   * @returns {void}
-   *
-   * 原因：用户旋转设备或拉宽窗口后，移动端遮罩不应继续覆盖桌面布局。
-   */
-  handleResize() {
-    if (window.innerWidth > 768 && this.isOpen) {
-      this.closeSidebar();
-    }
   }
 };
 

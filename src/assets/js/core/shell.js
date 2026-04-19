@@ -69,7 +69,7 @@ const appShell = (function() {
       return;
     }
 
-    await appScriptLoader.loadScript(pageMeta.rootPath + 'assets/js/modules/mobile-nav.js', 'mobile-nav');
+    await appScriptLoader.loadScript(pageMeta.rootPath + 'assets/js/core/mobile-nav.js', 'mobile-nav');
   }
 
   /**

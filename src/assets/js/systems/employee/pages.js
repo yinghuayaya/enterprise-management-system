@@ -430,7 +430,7 @@ employeeSystem.pages = (function(store, actions, renderers, view) {
   };
 })(employeeSystem.store, employeeSystem.actions, employeeSystem.renderers, EnterpriseView);
 
-// 对外暴露员工管理初始化入口，供 modules/employee.js 调用。
+// 对外暴露员工管理初始化入口，供 module-loader.js 调用。
 employeeSystem.init = function() {
   try {
     employeeSystem.pages.init();

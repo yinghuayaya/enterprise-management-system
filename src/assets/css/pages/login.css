@@ -18,7 +18,7 @@
 /* 品牌展示区：背景图铺满左侧，伪元素光斑强化小麦橙品牌氛围。 */
 .login-side {
   flex: 1;
-  background: url('../../images/landing-bj.jpg') center center / cover no-repeat;
+  background: url('../../images/landing-bg.jpg') center center / cover no-repeat;
   display: flex;
   flex-direction: column;
   justify-content: center;

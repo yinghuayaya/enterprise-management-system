@@ -325,7 +325,7 @@ purchaseSystem.pages = (function(store, actions, renderers, view) {
   };
 })(purchaseSystem.store, purchaseSystem.actions, purchaseSystem.renderers, EnterpriseView);
 
-// 对外暴露采购管理初始化入口，供 modules/purchase.js 调用。
+// 对外暴露采购管理初始化入口，供 module-loader.js 调用。
 purchaseSystem.init = function() {
   try {
     purchaseSystem.pages.init();

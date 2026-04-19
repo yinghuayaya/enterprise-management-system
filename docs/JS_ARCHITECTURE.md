@@ -7,10 +7,10 @@
 ```text
 src/assets/js/
 ├── main.js              # 应用启动编排
-├── core/                # 路由、页面壳、模块加载、光标等运行时能力
+├── core/                # 鉴权、导航、路由、页面壳、模块加载、光标等运行时能力
+├── pages/               # landing、login、register、dashboard 等页面控制器
 ├── shared/              # 跨业务域复用的状态和视图工具
 ├── systems/             # 业务域真实实现
-├── modules/             # 对外入口门面
 └── utils/               # 基础工具函数
 ```
 
@@ -19,22 +19,24 @@ src/assets/js/
 `main.js` 只负责启动编排：
 
 1. 计算当前页面相对路径。
-2. 动态加载 `core` 运行时。
-3. 执行登录鉴权。
-4. 加载 header、sidebar、footer。
-5. 初始化导航与移动端菜单。
-6. 根据页面业务域加载 `systems/<domain>` 与 `modules/<domain>.js`。
+2. 动态加载 `utils` 和 `core` 运行时。
+3. 按页面清单加载 `pages/<page>.js` 控制器及专属工具。
+4. 执行登录鉴权。
+5. 加载 header、sidebar、footer。
+6. 初始化导航与移动端菜单。
+7. 根据页面业务域加载 `data/<domain>.js` 与 `systems/<domain>`。
+8. 初始化页面控制器或业务系统。
 
 业务域脚本加载顺序固定为：
 
 ```text
 shared/state.js
 shared/view.js
+data/<domain>.js
 systems/<domain>/store.js
 systems/<domain>/actions.js
 systems/<domain>/renderers.js
 systems/<domain>/pages.js
-modules/<domain>.js
 ```
 
 ## 业务域职责
@@ -46,7 +48,7 @@ modules/<domain>.js
 - `renderers.js`：封装状态映射、统计卡片、徽章、进度条等展示辅助。
 - `pages.js`：根据当前页面绑定事件、调用 actions、刷新 DOM。
 
-`modules/<domain>.js` 只作为兼容门面，继续暴露旧的 `window.employeeModule`、`window.salesModule` 等全局 API，避免破坏已有调用。
+业务入口统一暴露为 `window.employeeSystem`、`window.salesSystem` 等 `xxxSystem` 全局对象，由 `module-loader.js` 直接调用 `init()`。历史 `window.xxxModule` 兼容门面已废弃。
 
 ## 共享组件化工具
 
@@ -63,6 +65,7 @@ modules/<domain>.js
 ## 约束
 
 - 不在业务页面恢复内联业务脚本。
+- HTML 页面只保留 `assets/js/main.js` 单入口，具体依赖交给运行时加载器。
 - 不使用 `export/import`，除非后续单独升级构建体系。
 - 保持现有 localStorage key，例如 `xm_employee_state`、`xm_sales_state`。
-- 新业务优先放入 `systems/<domain>`，不要继续把实现堆进 `modules`。
+- 新业务优先放入 `systems/<domain>`，页面级交互放入 `pages/`。

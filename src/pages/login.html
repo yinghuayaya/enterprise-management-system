@@ -39,41 +39,6 @@
       </div>
     </div>
   </div>
-
-  <script src="../assets/js/utils/storage.js"></script>
-  <script src="../assets/js/utils/validate.js"></script>
-  <script src="../assets/js/modules/auth.js"></script>
-  <script>
-    'use strict';
-    // 已登录则直接跳转
-    if (auth.isLoggedIn()) {
-      window.location.href = 'dashboard.html';
-    }
-
-    document.getElementById('login-form').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-
-      document.getElementById('username-error').textContent = '';
-      document.getElementById('password-error').textContent = '';
-      document.getElementById('login-error').textContent = '';
-
-      if (!username) {
-        document.getElementById('username-error').textContent = '请输入用户名';
-        return;
-      }
-      if (!password) {
-        document.getElementById('password-error').textContent = '请输入密码';
-        return;
-      }
-
-      if (auth.login(username, password)) {
-        window.location.href = 'dashboard.html';
-      } else {
-        document.getElementById('login-error').textContent = '用户名或密码错误';
-      }
-    });
-  </script>
+<script src="../assets/js/main.js"></script>
 </body>
 </html>

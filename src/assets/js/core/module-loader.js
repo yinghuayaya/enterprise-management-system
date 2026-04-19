@@ -1,13 +1,13 @@
 'use strict';
 
 const appScriptLoader = (function() {
-  const BUSINESS_MODULES = {
-    employee: 'employeeModule',
-    equipment: 'equipmentModule',
-    production: 'productionModule',
-    purchase: 'purchaseModule',
-    sales: 'salesModule',
-    warehouse: 'warehouseModule'
+  const BUSINESS_SYSTEMS = {
+    employee: 'employeeSystem',
+    equipment: 'equipmentSystem',
+    production: 'productionSystem',
+    purchase: 'purchaseSystem',
+    sales: 'salesSystem',
+    warehouse: 'warehouseSystem'
   };
 
   const BUSINESS_SCRIPT_ORDER = ['store', 'actions', 'renderers', 'pages'];
@@ -53,17 +53,26 @@ const appScriptLoader = (function() {
   /**
    * 按固定顺序加载当前业务域脚本。
    * @param {{section: string, rootPath: string}} pageMeta 当前页面所属业务域和资源根路径。
-   * @returns {Promise<string|undefined>} 返回兼容门面的全局变量名，非业务页返回 undefined。
+   * @returns {Promise<string|undefined>} 返回业务系统的全局变量名，非业务页返回 undefined。
    *
-   * 原因：store/actions/renderers/pages 存在依赖顺序，最后加载 modules 门面以保持旧的 window.xxxModule API。
+   * 原因：data/store/actions/renderers/pages 存在依赖顺序，必须由统一加载器串行装配。
    */
   async function loadBusinessScripts(pageMeta) {
-    const moduleGlobal = BUSINESS_MODULES[pageMeta.section];
-    if (!moduleGlobal || typeof window[moduleGlobal] !== 'undefined') {
-      return moduleGlobal;
+    const systemGlobal = BUSINESS_SYSTEMS[pageMeta.section];
+    if (!systemGlobal) {
+      return undefined;
+    }
+
+    if (window[systemGlobal] && typeof window[systemGlobal].init === 'function') {
+      return systemGlobal;
     }
 
     await loadSharedScripts(pageMeta.rootPath);
+
+    await loadScript(
+      pageMeta.rootPath + 'data/' + pageMeta.section + '.js',
+      pageMeta.section + '-data'
+    );
 
     for (const name of BUSINESS_SCRIPT_ORDER) {
       await loadScript(
@@ -72,36 +81,31 @@ const appScriptLoader = (function() {
       );
     }
 
-    await loadScript(
-      pageMeta.rootPath + 'assets/js/modules/' + pageMeta.section + '.js',
-      pageMeta.section + '-facade'
-    );
-
-    return moduleGlobal;
+    return systemGlobal;
   }
 
   /**
-   * 初始化当前业务域门面。
+   * 初始化当前业务系统。
    * @param {{section: string, rootPath: string}} pageMeta 当前页面元信息。
-   * @returns {Promise<void>} 业务门面完成初始化后 resolve。
+   * @returns {Promise<void>} 业务系统完成初始化后 resolve。
    *
-   * 原因：main.js 只认识页面元信息，具体子系统继续通过 window.xxxModule.init 保持经典脚本兼容。
+   * 原因：main.js 只认识页面元信息，具体子系统由加载器解析为 window.xxxSystem。
    */
-  async function initBusinessModule(pageMeta) {
-    const moduleGlobal = await loadBusinessScripts(pageMeta);
-    if (!moduleGlobal) {
+  async function initBusinessSystem(pageMeta) {
+    const systemGlobal = await loadBusinessScripts(pageMeta);
+    if (!systemGlobal) {
       return;
     }
 
-    const moduleApi = window[moduleGlobal];
-    if (moduleApi && typeof moduleApi.init === 'function') {
-      moduleApi.init();
+    const systemApi = window[systemGlobal];
+    if (systemApi && typeof systemApi.init === 'function') {
+      systemApi.init();
     }
   }
 
   return {
     loadScript,
-    initBusinessModule
+    initBusinessSystem
   };
 })();
 

@@ -168,14 +168,17 @@ function validateForm(formData, rules) {}
 JS 入口文件。
 ```javascript
 /* 应包含的功能 */
-// 1. 加载 core 运行时
-// 2. 初始化应用
+// 1. 加载 utils 与 core 运行时
+// 2. 按页面清单加载 pages 控制器
 // 3. 装配公共组件
-// 4. 按页面业务域加载 systems 与 modules 门面
+// 4. 按页面业务域加载 data 与 systems
 ```
 
 ### `src/assets/js/core/`
-应用运行时能力，包含页面元信息、公共组件加载、业务模块加载、全局光标等。`main.js` 应保持轻量，只做启动编排。
+应用运行时能力，包含鉴权、导航、页面元信息、公共组件加载、业务系统加载、全局光标等。`main.js` 应保持轻量，只做启动编排。
+
+### `src/assets/js/pages/`
+页面级控制器目录，承载 landing、login、register、dashboard 等非业务域页面的交互入口。
 
 ### `src/assets/js/shared/`
 跨业务域复用的状态与展示工具，例如 localStorage 状态容器、统计卡片、徽章、进度条、弹窗关闭绑定等。
@@ -183,8 +186,7 @@ JS 入口文件。
 ### `src/assets/js/systems/<domain>/`
 业务域真实实现目录。每个业务域按 `store.js`、`actions.js`、`renderers.js`、`pages.js` 拆分，分别负责状态、业务操作、展示辅助和页面事件绑定。
 
-### `src/assets/js/modules/<domain>.js`
-业务模块门面层，只暴露 `window.xxxModule` 兼容入口，不承载大段业务实现。
+业务系统统一暴露 `window.xxxSystem`，由 `core/module-loader.js` 直接加载并调用 `init()`。历史 `src/assets/js/modules/` 门面目录已废弃。
 
 ---
 
@@ -242,7 +244,6 @@ qualityRecords: [
 <!-- 页面内容 -->
 <!-- 引入JS文件 -->
 <script src="../../assets/js/main.js"></script>
-<script src="../../assets/js/modules/xxx.js"></script>
 </body>
 </html>
 ```

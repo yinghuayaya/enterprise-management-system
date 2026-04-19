@@ -291,7 +291,7 @@ productionSystem.pages = (function(store, actions, renderers, view) {
   };
 })(productionSystem.store, productionSystem.actions, productionSystem.renderers, EnterpriseView);
 
-// 对外暴露生产管理初始化入口，供 modules/production.js 调用。
+// 对外暴露生产管理初始化入口，供 module-loader.js 调用。
 productionSystem.init = function() {
   try {
     productionSystem.pages.init();

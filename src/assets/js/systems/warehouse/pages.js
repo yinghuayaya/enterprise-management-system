@@ -277,7 +277,7 @@ warehouseSystem.pages = (function(store, renderers, view) {
   };
 })(warehouseSystem.store, warehouseSystem.renderers, EnterpriseView);
 
-// 对外暴露仓储管理初始化入口，供 modules/warehouse.js 调用。
+// 对外暴露仓储管理初始化入口，供 module-loader.js 调用。
 warehouseSystem.init = function() {
   try {
     warehouseSystem.pages.init();

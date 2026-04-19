@@ -33,6 +33,15 @@ const appNav = {
   },
 
   /**
+   * 绑定退出登录按钮。
+   * @returns {void}
+   */
+  bindLogout() {
+    const btn = $('#logout-btn');
+    on(btn, 'click', () => auth.logout());
+  },
+
+  /**
    * 将当前登录用户渲染到 header 右侧区域。
    * @returns {void}
    */
@@ -43,15 +52,6 @@ const appNav = {
     if (el) el.textContent = user.username;
     const avatar = $('.header-user .avatar');
     if (avatar) avatar.textContent = user.username.charAt(0).toUpperCase();
-  },
-
-  /**
-   * 绑定退出登录按钮。
-   * @returns {void}
-   */
-  bindLogout() {
-    const btn = $('#logout-btn');
-    on(btn, 'click', () => auth.logout());
   }
 };
 

@@ -11,9 +11,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const initialMeta = getInitialPageMeta();
 
   try {
+    await loadUtilityRuntime(initialMeta.rootPath);
     await loadCoreRuntime(initialMeta.rootPath);
 
     const pageMeta = appRouter.getPageMeta();
+    const pageController = getPageController(pageMeta);
+    await loadPageDependencies(pageMeta, pageController);
+
     if (!appRouter.isPublicPage(pageMeta) && typeof auth !== 'undefined' && !auth.isLoggedIn()) {
       auth.guard();
       return;
@@ -25,11 +29,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     await appShell.loadPageShell(pageMeta);
     await appShell.ensureMobileNav(pageMeta);
     appShell.initSharedNavigation();
-    await appScriptLoader.initBusinessModule(pageMeta);
+    await appScriptLoader.initBusinessSystem(pageMeta);
+    initPageController(pageController);
   } catch (error) {
     console.error('App bootstrap failed:', error);
   }
 });
+
+const PAGE_CONTROLLERS = {
+  'dashboard.html': 'dashboard',
+  'landing.html': 'landing',
+  'login.html': 'login',
+  'register.html': 'register'
+};
+
+const PAGE_EXTRA_UTILS = {
+  register: ['validate']
+};
+
+/**
+ * 加载页面和业务都依赖的基础工具。
+ * @param {string} rootPath 当前页面回到 src 根目录的相对路径。
+ * @returns {Promise<void>} DOM、存储、格式化工具依次加载后 resolve。
+ *
+ * 原因：HTML 只保留 main.js 单入口，基础工具必须由启动器统一装配。
+ */
+async function loadUtilityRuntime(rootPath) {
+  const utilityScripts = ['dom', 'storage', 'format'];
+
+  for (const name of utilityScripts) {
+    await loadRuntimeScript(rootPath + 'assets/js/utils/' + name + '.js', 'utils-' + name);
+  }
+}
 
 /**
  * 在 router 加载前计算基础资源路径。
@@ -66,10 +97,57 @@ function getInitialPageMeta() {
  * 原因：后续步骤依赖 appRouter/appShell/appScriptLoader，全局对象必须先注册。
  */
 async function loadCoreRuntime(rootPath) {
-  const coreScripts = ['module-loader', 'router', 'shell', 'cursor'];
+  const coreScripts = ['module-loader', 'router', 'shell', 'cursor', 'auth', 'navigation'];
 
   for (const name of coreScripts) {
     await loadRuntimeScript(rootPath + 'assets/js/core/' + name + '.js', 'core-' + name);
+  }
+}
+
+/**
+ * 根据页面名匹配页面级控制器。
+ * @param {{pageName: string}} pageMeta 当前页面元信息。
+ * @returns {string|undefined} 页面控制器名称，无页面控制器时返回 undefined。
+ */
+function getPageController(pageMeta) {
+  return PAGE_CONTROLLERS[pageMeta.pageName];
+}
+
+/**
+ * 加载页面级控制器及其专属工具。
+ * @param {{rootPath: string}} pageMeta 当前页面元信息。
+ * @param {string|undefined} controllerName 页面控制器名称。
+ * @returns {Promise<void>} 页面依赖加载完成后 resolve。
+ */
+async function loadPageDependencies(pageMeta, controllerName) {
+  if (!controllerName) {
+    return;
+  }
+
+  const extraUtils = PAGE_EXTRA_UTILS[controllerName] || [];
+  for (const name of extraUtils) {
+    await loadRuntimeScript(pageMeta.rootPath + 'assets/js/utils/' + name + '.js', 'utils-' + name);
+  }
+
+  await loadRuntimeScript(
+    pageMeta.rootPath + 'assets/js/pages/' + controllerName + '.js',
+    'page-' + controllerName
+  );
+}
+
+/**
+ * 初始化页面级控制器。
+ * @param {string|undefined} controllerName 页面控制器名称。
+ * @returns {void}
+ */
+function initPageController(controllerName) {
+  if (!controllerName || !window.appPages) {
+    return;
+  }
+
+  const controller = window.appPages[controllerName];
+  if (controller && typeof controller.init === 'function') {
+    controller.init();
   }
 }
 

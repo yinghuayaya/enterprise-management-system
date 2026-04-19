@@ -1,16 +1,6 @@
-/* 项目字体加载：font-display 使用 swap，保证字体文件未就绪时页面文字仍立即可读。 */
-@font-face {
-  font-family: 'YourFontName';
-  src: url('../fonts/your-font.woff2') format('woff2'),
-       url('../fonts/your-font.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* 全局文字栈：自定义字体失败时回退到中英文系统字体，避免登录页和业务页排版跳变。 */
+/* 全局文字栈：使用中英文系统字体，避免缺失字体文件产生 404。 */
 body {
-  font-family: 'YourFontName', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Microsoft YaHei', sans-serif;
 }
 
 /* 标题排版：所有页面标题共享相同字重、行高和主题文字色。 */

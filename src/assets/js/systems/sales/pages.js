@@ -321,7 +321,7 @@ salesSystem.pages = (function(store, actions, renderers, view) {
   };
 })(salesSystem.store, salesSystem.actions, salesSystem.renderers, EnterpriseView);
 
-// 对外暴露销售管理初始化入口，供 modules/sales.js 调用。
+// 对外暴露销售管理初始化入口，供 module-loader.js 调用。
 salesSystem.init = function() {
   try {
     salesSystem.pages.init();
