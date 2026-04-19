@@ -25,7 +25,7 @@ function on(element, event, handler) {
 
 // 表格操作按钮使用事件委托，支持业务列表刷新后继续响应点击。
 function delegate(parent, selector, event, handler) {
-  on(parent, event, function (e) {
+  on(parent, event, (e) => {
     const target = e.target.closest(selector);
     if (target && parent.contains(target)) {
       handler.call(target, e);

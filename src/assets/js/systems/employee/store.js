@@ -11,6 +11,7 @@ employeeSystem.store = EnterpriseState.createStore({
     { name: 'recruitment', type: 'array' },
     { name: 'performance', type: 'array' }
   ],
+  // 提供员工管理子系统的浏览器本地状态默认值。
   getDefaults() {
     const source = typeof employeeData !== 'undefined' ? employeeData : {};
     return {

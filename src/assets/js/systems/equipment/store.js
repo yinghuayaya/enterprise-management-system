@@ -10,6 +10,7 @@ equipmentSystem.store = EnterpriseState.createStore({
     { name: 'maintenance', type: 'array' },
     { name: 'faults', type: 'array' }
   ],
+  // 提供设备管理子系统的浏览器本地状态默认值。
   getDefaults() {
     const source = typeof equipmentData !== 'undefined' ? equipmentData : {};
     return {

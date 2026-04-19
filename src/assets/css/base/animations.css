@@ -122,6 +122,10 @@
 }
 
 /* 动画延迟类 */
+.delay-0 {
+  animation-delay: 0s;
+}
+
 .delay-100 {
   animation-delay: 0.1s;
 }
@@ -140,6 +144,18 @@
 
 .delay-500 {
   animation-delay: 0.5s;
+}
+
+.delay-600 {
+  animation-delay: 0.6s;
+}
+
+.delay-700 {
+  animation-delay: 0.7s;
+}
+
+.delay-800 {
+  animation-delay: 0.8s;
 }
 
 /* 自定义鼠标动画 */

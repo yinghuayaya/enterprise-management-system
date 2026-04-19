@@ -58,6 +58,7 @@ employeeSystem.pages = (function(store, actions, renderers, view) {
     select.value = currentValue;
   }
 
+  // 渲染员工首页的员工概览行。
   function renderEmployeeIndexRow(item) {
     return `
       <tr>
@@ -73,6 +74,7 @@ employeeSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染考勤统计页的员工考勤行。
   function renderAttendanceRow(item) {
     const rate = ((item.actualDays / item.workDays) * 100).toFixed(1);
     const rateClass = rate >= 95 ? 'badge-success' : rate >= 85 ? 'badge-warning' : 'badge-danger';
@@ -91,6 +93,7 @@ employeeSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染绩效管理页的员工绩效行。
   function renderPerformanceRow(item) {
     return `
       <tr>
@@ -105,6 +108,7 @@ employeeSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染招聘管理页的招聘计划行。
   function renderRecruitmentRow(item) {
     return `
       <tr>
@@ -121,6 +125,7 @@ employeeSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染员工档案维护页的员工档案行。
   function renderEmployeeInfoRow(item) {
     return `
       <tr>
@@ -152,6 +157,7 @@ employeeSystem.pages = (function(store, actions, renderers, view) {
     const deptFilter = document.getElementById('dept-filter');
     const closeModal = () => removeClass(document.getElementById('modal-overlay'), 'active');
 
+    // 刷新员工首页统计、部门筛选和员工列表。
     function refresh() {
       const employees = store.sync().employees;
       const keyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
@@ -164,12 +170,15 @@ employeeSystem.pages = (function(store, actions, renderers, view) {
       view.renderRows(tbody, filtered, renderEmployeeIndexRow, { colspan: 8, text: '暂无匹配员工' });
     }
 
+    // 打开员工首页当前行的员工档案弹窗。
+    function handleDetailClick() {
+      showEmployeeDetail(this.dataset.id);
+    }
+
     view.bindModalClose(closeModal);
     on(searchInput, 'input', refresh);
     on(deptFilter, 'change', refresh);
-    delegate(tbody, '[data-action="detail"]', 'click', function() {
-      showEmployeeDetail(this.dataset.id);
-    });
+    delegate(tbody, '[data-action="detail"]', 'click', handleDetailClick);
 
     tbody.dataset.bound = '1';
     refresh();
@@ -218,6 +227,7 @@ employeeSystem.pages = (function(store, actions, renderers, view) {
     const tbody = document.getElementById('recruit-tbody');
     if (!tbody || tbody.dataset.bound === '1') return;
 
+    // 刷新招聘计划统计和招聘计划列表。
     function render() {
       const list = store.sync().recruitment;
       renderers.stats([
@@ -242,12 +252,136 @@ employeeSystem.pages = (function(store, actions, renderers, view) {
       actions.createRecruitment(payload);
       render();
     });
-    delegate(tbody, '[data-action="delete"]', 'click', function() {
+
+    // 删除当前行的招聘计划。
+    function handleRecruitmentDelete() {
       view.confirmDelete('确认删除该招聘计划？', () => actions.deleteRecruitment(this.dataset.id), render);
-    });
+    }
+
+    delegate(tbody, '[data-action="delete"]', 'click', handleRecruitmentDelete);
 
     tbody.dataset.bound = '1';
     render();
+  }
+
+  // 创建员工档案页上下文，集中保存当前表格和编辑状态。
+  function createInfoContext(tbody) {
+    return {
+      tbody,
+      editingId: null
+    };
+  }
+
+  // 关闭员工档案弹窗并退出编辑状态。
+  function closeInfoModal(context) {
+    removeClass(document.getElementById('modal-overlay'), 'active');
+    context.editingId = null;
+  }
+
+  // 打开员工档案新增或编辑弹窗。
+  function openInfoModal(title) {
+    const titleElement = document.getElementById('modal-title');
+    const errorElement = document.getElementById('form-error');
+    if (titleElement) titleElement.textContent = title;
+    if (errorElement) errorElement.textContent = '';
+    addClass(document.getElementById('modal-overlay'), 'active');
+  }
+
+  // 将员工档案数据写入弹窗表单。
+  function fillInfoForm(employee) {
+    const fields = {
+      name: employee.name || '',
+      gender: employee.gender || '男',
+      dept: employee.dept || '',
+      position: employee.position || '',
+      phone: employee.phone || '',
+      email: employee.email || '',
+      entryDate: employee.entryDate || '',
+      salary: employee.salary || ''
+    };
+
+    Object.keys(fields).forEach((key) => {
+      const element = document.getElementById('f-' + key);
+      if (element) element.value = fields[key];
+    });
+  }
+
+  // 读取员工档案弹窗表单数据。
+  function readInfoForm() {
+    return {
+      name: view.getTrimmedValue('f-name'),
+      gender: view.getValue('f-gender', '男') || '男',
+      dept: view.getTrimmedValue('f-dept'),
+      position: view.getTrimmedValue('f-position'),
+      phone: view.getTrimmedValue('f-phone'),
+      email: view.getTrimmedValue('f-email'),
+      entryDate: view.getValue('f-entryDate'),
+      salary: view.getValue('f-salary', 0)
+    };
+  }
+
+  // 渲染员工档案维护页表格。
+  function renderInfoTable(context, list) {
+    view.renderRows(context.tbody, list, renderEmployeeInfoRow, { colspan: 10, text: '暂无员工档案' });
+  }
+
+  // 按工号和姓名筛选员工档案。
+  function filterInfoEmployees() {
+    const keyword = view.getTrimmedValue('search-input');
+    return view.filterByKeyword(store.sync().employees, keyword, ['id', 'name']);
+  }
+
+  // 刷新员工档案维护页列表。
+  function refreshInfoPage(context) {
+    renderInfoTable(context, filterInfoEmployees());
+  }
+
+  // 保存员工档案弹窗表单数据。
+  function saveInfoForm(context) {
+    const form = readInfoForm();
+    const errorElement = document.getElementById('form-error');
+    if (!form.name) {
+      if (errorElement) errorElement.textContent = '姓名为必填项';
+      return;
+    }
+
+    if (context.editingId) {
+      actions.updateEmployee(context.editingId, form);
+    } else {
+      actions.createEmployee(form);
+    }
+
+    closeInfoModal(context);
+    refreshInfoPage(context);
+  }
+
+  // 绑定员工档案维护页的新增、保存、搜索、编辑和删除事件。
+  function bindInfoEvents(context) {
+    view.bindModalClose(() => closeInfoModal(context));
+    on(document.getElementById('add-btn'), 'click', () => {
+      context.editingId = null;
+      fillInfoForm({ gender: '男' });
+      openInfoModal('新增员工');
+    });
+    on(document.getElementById('modal-save'), 'click', () => saveInfoForm(context));
+    on(document.getElementById('search-input'), 'input', () => refreshInfoPage(context));
+
+    // 将当前行员工档案载入编辑弹窗。
+    function handleEditClick() {
+      const employee = store.sync().employees.find((item) => item.id === this.dataset.id);
+      if (!employee) return;
+      context.editingId = employee.id;
+      fillInfoForm(employee);
+      openInfoModal('编辑员工');
+    }
+
+    // 删除当前行员工档案。
+    function handleDeleteClick() {
+      view.confirmDelete('确认删除该员工？', () => actions.deleteEmployee(this.dataset.id), () => refreshInfoPage(context));
+    }
+
+    delegate(context.tbody, '[data-action="edit"]', 'click', handleEditClick);
+    delegate(context.tbody, '[data-action="delete"]', 'click', handleDeleteClick);
   }
 
   // 初始化员工档案维护页。
@@ -255,99 +389,10 @@ employeeSystem.pages = (function(store, actions, renderers, view) {
     const tbody = document.getElementById('info-tbody');
     if (!tbody || tbody.dataset.bound === '1') return;
 
-    let editingId = null;
-
-    function closeModal() {
-      removeClass(document.getElementById('modal-overlay'), 'active');
-      editingId = null;
-    }
-
-    function openModal(title) {
-      const titleElement = document.getElementById('modal-title');
-      const errorElement = document.getElementById('form-error');
-      if (titleElement) titleElement.textContent = title;
-      if (errorElement) errorElement.textContent = '';
-      addClass(document.getElementById('modal-overlay'), 'active');
-    }
-
-    function fillForm(employee) {
-      const fields = {
-        name: employee.name || '',
-        gender: employee.gender || '男',
-        dept: employee.dept || '',
-        position: employee.position || '',
-        phone: employee.phone || '',
-        email: employee.email || '',
-        entryDate: employee.entryDate || '',
-        salary: employee.salary || ''
-      };
-
-      Object.keys(fields).forEach((key) => {
-        const element = document.getElementById('f-' + key);
-        if (element) element.value = fields[key];
-      });
-    }
-
-    function readForm() {
-      return {
-        name: view.getTrimmedValue('f-name'),
-        gender: view.getValue('f-gender', '男') || '男',
-        dept: view.getTrimmedValue('f-dept'),
-        position: view.getTrimmedValue('f-position'),
-        phone: view.getTrimmedValue('f-phone'),
-        email: view.getTrimmedValue('f-email'),
-        entryDate: view.getValue('f-entryDate'),
-        salary: view.getValue('f-salary', 0)
-      };
-    }
-
-    function render(list) {
-      view.renderRows(tbody, list, renderEmployeeInfoRow, { colspan: 10, text: '暂无员工档案' });
-    }
-
-    function refresh() {
-      const keyword = view.getTrimmedValue('search-input');
-      const list = view.filterByKeyword(store.sync().employees, keyword, ['id', 'name']);
-      render(list);
-    }
-
-    view.bindModalClose(closeModal);
-    on(document.getElementById('add-btn'), 'click', () => {
-      editingId = null;
-      fillForm({ gender: '男' });
-      openModal('新增员工');
-    });
-    on(document.getElementById('modal-save'), 'click', () => {
-      const form = readForm();
-      const errorElement = document.getElementById('form-error');
-      if (!form.name) {
-        if (errorElement) errorElement.textContent = '姓名为必填项';
-        return;
-      }
-
-      if (editingId) {
-        actions.updateEmployee(editingId, form);
-      } else {
-        actions.createEmployee(form);
-      }
-
-      closeModal();
-      refresh();
-    });
-    on(document.getElementById('search-input'), 'input', refresh);
-    delegate(tbody, '[data-action="edit"]', 'click', function() {
-      const employee = store.sync().employees.find((item) => item.id === this.dataset.id);
-      if (!employee) return;
-      editingId = employee.id;
-      fillForm(employee);
-      openModal('编辑员工');
-    });
-    delegate(tbody, '[data-action="delete"]', 'click', function() {
-      view.confirmDelete('确认删除该员工？', () => actions.deleteEmployee(this.dataset.id), refresh);
-    });
-
+    const context = createInfoContext(tbody);
+    bindInfoEvents(context);
     tbody.dataset.bound = '1';
-    refresh();
+    refreshInfoPage(context);
   }
 
   // 按当前员工管理子页面分发初始化逻辑。

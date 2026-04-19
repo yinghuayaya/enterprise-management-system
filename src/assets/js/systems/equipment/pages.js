@@ -4,6 +4,7 @@ window.equipmentSystem = window.equipmentSystem || {};
 
 // 设备管理页面控制器：负责设备总览、监控、档案、维护和故障页。
 equipmentSystem.pages = (function(store, actions, renderers, view) {
+  // 渲染设备管理首页的设备概览行。
   function renderEquipmentSummaryRow(item) {
     return `
       <tr>
@@ -17,6 +18,7 @@ equipmentSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染设备监控页的设备状态行。
   function renderEquipmentMonitorRow(item) {
     return `
       <tr>
@@ -32,6 +34,7 @@ equipmentSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染设备档案页的设备档案行。
   function renderEquipmentInfoRow(item) {
     return `
       <tr>
@@ -53,6 +56,7 @@ equipmentSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染设备维护计划行。
   function renderMaintenanceRow(item) {
     return `
       <tr>
@@ -68,6 +72,7 @@ equipmentSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染设备故障记录行。
   function renderFaultRow(item) {
     return `
       <tr>
@@ -124,10 +129,12 @@ equipmentSystem.pages = (function(store, actions, renderers, view) {
     const tbody = document.getElementById('info-tbody');
     if (!tbody || tbody.dataset.bound === '1') return;
 
+    // 关闭设备档案详情弹窗。
     function closeModal() {
       removeClass(document.getElementById('modal-overlay'), 'active');
     }
 
+    // 打开设备档案详情弹窗。
     function showDetail(id) {
       const item = store.sync().equipment.find((equipment) => equipment.id === id);
       const title = document.getElementById('modal-title');
@@ -150,10 +157,21 @@ equipmentSystem.pages = (function(store, actions, renderers, view) {
       addClass(document.getElementById('modal-overlay'), 'active');
     }
 
+    // 刷新设备档案页列表。
     function refresh() {
       const keyword = view.getTrimmedValue('search-input');
       const list = view.filterByKeyword(store.sync().equipment, keyword, ['name', 'model']);
       view.renderRows(tbody, list, renderEquipmentInfoRow, { colspan: 9, text: '暂无设备档案' });
+    }
+
+    // 打开当前行的设备档案详情。
+    function handleDetailClick() {
+      showDetail(this.dataset.id);
+    }
+
+    // 删除当前行的设备档案。
+    function handleEquipmentDelete() {
+      view.confirmDelete('确认删除该设备？', () => actions.deleteEquipment(this.dataset.id), refresh);
     }
 
     view.bindModalClose(closeModal);
@@ -170,12 +188,8 @@ equipmentSystem.pages = (function(store, actions, renderers, view) {
       actions.createEquipment(payload);
       refresh();
     });
-    delegate(tbody, '[data-action="detail"]', 'click', function() {
-      showDetail(this.dataset.id);
-    });
-    delegate(tbody, '[data-action="delete"]', 'click', function() {
-      view.confirmDelete('确认删除该设备？', () => actions.deleteEquipment(this.dataset.id), refresh);
-    });
+    delegate(tbody, '[data-action="detail"]', 'click', handleDetailClick);
+    delegate(tbody, '[data-action="delete"]', 'click', handleEquipmentDelete);
 
     tbody.dataset.bound = '1';
     refresh();
@@ -186,6 +200,7 @@ equipmentSystem.pages = (function(store, actions, renderers, view) {
     const tbody = document.getElementById('maintenance-tbody');
     if (!tbody || tbody.dataset.bound === '1') return;
 
+    // 刷新设备维护统计和维护计划列表。
     function render() {
       const list = store.sync().maintenance;
       renderers.stats([
@@ -210,9 +225,13 @@ equipmentSystem.pages = (function(store, actions, renderers, view) {
       actions.createMaintenance(payload);
       render();
     });
-    delegate(tbody, '[data-action="delete"]', 'click', function() {
+
+    // 删除当前行的设备维护计划。
+    function handleMaintenanceDelete() {
       view.confirmDelete('确认删除该维护计划？', () => actions.deleteMaintenance(this.dataset.id), render);
-    });
+    }
+
+    delegate(tbody, '[data-action="delete"]', 'click', handleMaintenanceDelete);
 
     tbody.dataset.bound = '1';
     render();
@@ -223,6 +242,7 @@ equipmentSystem.pages = (function(store, actions, renderers, view) {
     const tbody = document.getElementById('fault-tbody');
     if (!tbody || tbody.dataset.bound === '1') return;
 
+    // 刷新设备故障统计和故障记录列表。
     function render() {
       const list = store.sync().faults;
       renderers.stats([
@@ -247,9 +267,13 @@ equipmentSystem.pages = (function(store, actions, renderers, view) {
       actions.createFault(payload);
       render();
     });
-    delegate(tbody, '[data-action="delete"]', 'click', function() {
+
+    // 删除当前行的设备故障记录。
+    function handleFaultDelete() {
       view.confirmDelete('确认删除该故障记录？', () => actions.deleteFault(this.dataset.id), render);
-    });
+    }
+
+    delegate(tbody, '[data-action="delete"]', 'click', handleFaultDelete);
 
     tbody.dataset.bound = '1';
     render();

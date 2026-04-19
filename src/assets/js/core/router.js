@@ -39,6 +39,7 @@ const appRouter = (function() {
 
   // 公共 header/sidebar 注入后，按当前页面层级修正 logo 和侧边栏链接。
   function initPathObserver() {
+    // 每次公共组件 DOM 变化后修正静态资源和业务页面链接。
     function fixComponentPaths() {
       const pageMeta = getPageMeta();
       if (!pageMeta.rootPath && !pageMeta.pagesPath) return;

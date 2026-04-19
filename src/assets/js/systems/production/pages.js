@@ -4,6 +4,7 @@ window.productionSystem = window.productionSystem || {};
 
 // 生产管理页面控制器：负责生产总览、库存、物料、订单、计划、质检和排产页。
 productionSystem.pages = (function(store, actions, renderers, view) {
+  // 渲染生产管理首页的任务行。
   function renderTaskRow(item) {
     return `
       <tr>
@@ -17,6 +18,7 @@ productionSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染生产库存页的物料库存行。
   function renderInventoryRow(item) {
     const ratio = item.required ? item.stock / item.required : 0;
     const statusClass = ratio >= 1 ? 'badge-success' : ratio >= 0.5 ? 'badge-warning' : 'badge-danger';
@@ -35,6 +37,7 @@ productionSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染物料需求页的物料需求行。
   function renderMaterialRow(item) {
     return `
       <tr>
@@ -50,6 +53,7 @@ productionSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染生产订单页的订单行。
   function renderOrderRow(item) {
     return `
       <tr>
@@ -64,6 +68,7 @@ productionSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染生产计划页的计划行。
   function renderPlanRow(item) {
     return `
       <tr>
@@ -78,6 +83,7 @@ productionSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染生产排程页的任务行。
   function renderSchedulingRow(item) {
     return `
       <tr>
@@ -92,6 +98,7 @@ productionSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染质量检验页的质检记录行。
   function renderQualityRow(item) {
     return `
       <tr>
@@ -162,6 +169,7 @@ productionSystem.pages = (function(store, actions, renderers, view) {
       { icon: '✅', value: orders.filter((item) => item.status === '已完成').length, label: '已完成' }
     ]);
 
+    // 渲染生产订单筛选结果。
     function render(list) {
       view.renderRows(tbody, list, renderOrderRow, { colspan: 7, text: '暂无生产订单' });
     }
@@ -179,6 +187,7 @@ productionSystem.pages = (function(store, actions, renderers, view) {
     const tbody = document.getElementById('plan-tbody');
     if (!tbody || tbody.dataset.bound === '1') return;
 
+    // 刷新生产计划列表。
     function render() {
       view.renderRows(tbody, store.sync().plans, renderPlanRow, { colspan: 7, text: '暂无生产计划' });
     }
@@ -198,9 +207,13 @@ productionSystem.pages = (function(store, actions, renderers, view) {
       });
       render();
     });
-    delegate(tbody, '[data-action="delete"]', 'click', function() {
+
+    // 删除当前行的生产计划。
+    function handlePlanDelete() {
       view.confirmDelete('确认删除该计划？', () => actions.deletePlan(this.dataset.id), render);
-    });
+    }
+
+    delegate(tbody, '[data-action="delete"]', 'click', handlePlanDelete);
 
     tbody.dataset.bound = '1';
     render();

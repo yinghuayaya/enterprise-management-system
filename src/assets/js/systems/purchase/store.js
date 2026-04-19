@@ -10,6 +10,7 @@ purchaseSystem.store = EnterpriseState.createStore({
     { name: 'orders', type: 'array' },
     { name: 'analysis', type: 'object' }
   ],
+  // 提供采购管理子系统的浏览器本地状态默认值。
   getDefaults() {
     const source = typeof purchaseData !== 'undefined' ? purchaseData : {};
     return {

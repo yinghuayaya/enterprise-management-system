@@ -11,6 +11,7 @@ warehouseSystem.store = EnterpriseState.createStore({
     { name: 'outbound', type: 'array' },
     { name: 'locations', type: 'array' }
   ],
+  // 提供仓储管理子系统的浏览器本地状态默认值。
   getDefaults() {
     const source = typeof warehouseData !== 'undefined' ? warehouseData : {};
     return {

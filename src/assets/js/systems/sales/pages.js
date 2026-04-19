@@ -4,6 +4,7 @@ window.salesSystem = window.salesSystem || {};
 
 // 销售管理页面控制器：负责销售总览、客户、订单、定价、报表和团队页。
 salesSystem.pages = (function(store, actions, renderers, view) {
+  // 渲染销售管理首页的订单摘要行。
   function renderSalesIndexRow(item) {
     return `
       <tr>
@@ -16,6 +17,7 @@ salesSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染客户管理页的客户行。
   function renderCustomerRow(item) {
     return `
       <tr>
@@ -31,6 +33,7 @@ salesSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染销售订单页的订单行。
   function renderOrderRow(item) {
     return `
       <tr>
@@ -47,6 +50,7 @@ salesSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染价格策略页的定价行。
   function renderPricingRow(item) {
     return `
       <tr>
@@ -61,6 +65,7 @@ salesSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 创建销售月度报表行渲染器。
   function renderMonthlyReportRow(maxRevenue) {
     return (item) => {
       const barWidth = maxRevenue ? Math.round((item.revenue / maxRevenue) * 100) : 0;
@@ -76,6 +81,7 @@ salesSystem.pages = (function(store, actions, renderers, view) {
     };
   }
 
+  // 渲染销售团队页的团队成员行。
   function renderTeamRow(item) {
     return `
       <tr>
@@ -114,6 +120,7 @@ salesSystem.pages = (function(store, actions, renderers, view) {
     const tbody = document.getElementById('customer-tbody');
     if (!tbody || tbody.dataset.bound === '1') return;
 
+    // 渲染客户筛选结果。
     function render(list) {
       const customers = store.sync().customers;
       renderers.stats([
@@ -125,6 +132,7 @@ salesSystem.pages = (function(store, actions, renderers, view) {
       view.renderRows(tbody, list, renderCustomerRow, { colspan: 8, text: '暂无客户' });
     }
 
+    // 刷新客户列表。
     function refresh() {
       const keyword = view.getTrimmedValue('search-input');
       const list = view.filterByKeyword(store.sync().customers, keyword, ['name', 'contact']);
@@ -145,9 +153,13 @@ salesSystem.pages = (function(store, actions, renderers, view) {
       actions.createCustomer(payload);
       refresh();
     });
-    delegate(tbody, '[data-action="delete"]', 'click', function() {
+
+    // 删除当前行的客户档案。
+    function handleCustomerDelete() {
       view.confirmDelete('确认删除该客户？', () => actions.deleteCustomer(this.dataset.id), refresh);
-    });
+    }
+
+    delegate(tbody, '[data-action="delete"]', 'click', handleCustomerDelete);
 
     tbody.dataset.bound = '1';
     refresh();
@@ -158,6 +170,7 @@ salesSystem.pages = (function(store, actions, renderers, view) {
     const tbody = document.getElementById('order-tbody');
     if (!tbody || tbody.dataset.bound === '1') return;
 
+    // 渲染销售订单筛选结果。
     function render(list) {
       const orders = store.sync().orders;
       renderers.stats([
@@ -169,6 +182,7 @@ salesSystem.pages = (function(store, actions, renderers, view) {
       view.renderRows(tbody, list, renderOrderRow, { colspan: 9, text: '暂无销售订单' });
     }
 
+    // 刷新销售订单列表。
     function refresh() {
       const keyword = view.getTrimmedValue('search-input');
       const status = view.getValue('status-filter');
@@ -202,6 +216,7 @@ salesSystem.pages = (function(store, actions, renderers, view) {
     const tbody = document.getElementById('pricing-tbody');
     if (!tbody || tbody.dataset.bound === '1') return;
 
+    // 刷新价格策略列表。
     function render() {
       view.renderRows(tbody, store.sync().pricing, renderPricingRow, { colspan: 7, text: '暂无价格策略' });
     }

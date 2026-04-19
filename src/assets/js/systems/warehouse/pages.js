@@ -4,6 +4,7 @@ window.warehouseSystem = window.warehouseSystem || {};
 
 // 仓储管理页面控制器：负责库存总览、货位、出入库、运输和预警页。
 warehouseSystem.pages = (function(store, renderers, view) {
+  // 渲染仓储首页的库存行。
   function renderInventoryRow(item) {
     const low = item.stock < item.minStock;
     return `
@@ -19,6 +20,7 @@ warehouseSystem.pages = (function(store, renderers, view) {
     `;
   }
 
+  // 渲染仓库布局页的货位行。
   function renderLocationRow(item) {
     const usage = item.capacity ? ((item.used / item.capacity) * 100).toFixed(1) : '0.0';
     return `
@@ -35,6 +37,7 @@ warehouseSystem.pages = (function(store, renderers, view) {
     `;
   }
 
+  // 渲染仓库布局页的库存明细行。
   function renderInventoryDetailRow(item) {
     return `
       <tr>
@@ -49,6 +52,7 @@ warehouseSystem.pages = (function(store, renderers, view) {
     `;
   }
 
+  // 渲染入库记录行。
   function renderInboundRow(item) {
     return `
       <tr>
@@ -62,6 +66,7 @@ warehouseSystem.pages = (function(store, renderers, view) {
     `;
   }
 
+  // 渲染出库记录行。
   function renderOutboundRow(item) {
     return `
       <tr>
@@ -75,6 +80,7 @@ warehouseSystem.pages = (function(store, renderers, view) {
     `;
   }
 
+  // 创建运输跟踪行渲染器。
   function renderTransportRow(today) {
     return (item) => {
       const outDate = new Date(item.date);
@@ -96,6 +102,7 @@ warehouseSystem.pages = (function(store, renderers, view) {
   }
 
 
+  // 渲染库存预警行。
   function renderWarningRow(item) {
     const gap = item.minStock - item.stock;
     const urgency = item.stock / item.minStock < 0.5 ? '紧急' : '一般';
@@ -113,6 +120,7 @@ warehouseSystem.pages = (function(store, renderers, view) {
     `;
   }
 
+  // 渲染正常库存行。
   function renderNormalStockRow(item) {
     const ratio = item.minStock ? ((item.stock / item.minStock) * 100).toFixed(0) : '0';
     return `

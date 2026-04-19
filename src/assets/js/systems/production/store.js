@@ -12,6 +12,7 @@ productionSystem.store = EnterpriseState.createStore({
     { name: 'orders', type: 'array' },
     { name: 'qualityRecords', type: 'array' }
   ],
+  // 提供生产管理子系统的浏览器本地状态默认值。
   getDefaults() {
     const source = typeof productionData !== 'undefined' ? productionData : {};
     return {

@@ -4,6 +4,7 @@ window.purchaseSystem = window.purchaseSystem || {};
 
 // 采购管理页面控制器：负责采购总览、供应商、流程、跟踪和分析页。
 purchaseSystem.pages = (function(store, actions, renderers, view) {
+  // 渲染采购管理首页的订单摘要行。
   function renderPurchaseIndexRow(item) {
     return `
       <tr>
@@ -17,6 +18,7 @@ purchaseSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染供应商管理页的供应商行。
   function renderSupplierRow(item) {
     return `
       <tr>
@@ -32,6 +34,7 @@ purchaseSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染采购流程页的订单流程行。
   function renderProcessRow(item) {
     return `
       <tr>
@@ -48,6 +51,7 @@ purchaseSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 渲染到货跟踪页的采购订单行。
   function renderTrackingRow(item) {
     const today = new Date();
     const deliveryDate = new Date(item.deliveryDate);
@@ -73,6 +77,7 @@ purchaseSystem.pages = (function(store, actions, renderers, view) {
     `;
   }
 
+  // 创建采购月度分析行渲染器。
   function renderMonthlyAnalysisRow(maxAmount) {
     return (item) => {
       const barWidth = maxAmount ? Math.round((item.amount / maxAmount) * 100) : 0;
@@ -87,6 +92,7 @@ purchaseSystem.pages = (function(store, actions, renderers, view) {
     };
   }
 
+  // 创建供应商采购额占比行渲染器。
   function renderSupplierAmountRow(total) {
     return ([name, amount]) => {
       const percent = total ? ((amount / total) * 100).toFixed(1) : '0.0';
@@ -100,6 +106,7 @@ purchaseSystem.pages = (function(store, actions, renderers, view) {
     };
   }
 
+  // 汇总供应商采购额。
   function collectSupplierAmounts(orders) {
     return orders.reduce((result, item) => {
       result[item.supplierName] = (result[item.supplierName] || 0) + item.amount;
@@ -131,6 +138,7 @@ purchaseSystem.pages = (function(store, actions, renderers, view) {
     const tbody = document.getElementById('supplier-tbody');
     if (!tbody || tbody.dataset.bound === '1') return;
 
+    // 渲染供应商筛选结果。
     function render(list) {
       const suppliers = store.sync().suppliers;
       const active = suppliers.filter((item) => item.status === '合作中').length;
@@ -143,6 +151,7 @@ purchaseSystem.pages = (function(store, actions, renderers, view) {
       view.renderRows(tbody, list, renderSupplierRow, { colspan: 8, text: '暂无供应商' });
     }
 
+    // 刷新供应商列表。
     function refresh() {
       const keyword = view.getTrimmedValue('search-input');
       const list = view.filterByKeyword(store.sync().suppliers, keyword, ['name', 'contact']);
@@ -164,9 +173,13 @@ purchaseSystem.pages = (function(store, actions, renderers, view) {
       actions.createSupplier(payload);
       refresh();
     });
-    delegate(tbody, '[data-action="delete"]', 'click', function() {
+
+    // 删除当前行的供应商档案。
+    function handleSupplierDelete() {
       view.confirmDelete('确认删除该供应商？', () => actions.deleteSupplier(this.dataset.id), refresh);
-    });
+    }
+
+    delegate(tbody, '[data-action="delete"]', 'click', handleSupplierDelete);
 
     tbody.dataset.bound = '1';
     refresh();
@@ -177,6 +190,7 @@ purchaseSystem.pages = (function(store, actions, renderers, view) {
     const tbody = document.getElementById('order-tbody');
     if (!tbody || tbody.dataset.bound === '1') return;
 
+    // 渲染采购流程筛选结果。
     function render(list) {
       const orders = store.sync().orders;
       renderers.stats([
@@ -188,6 +202,7 @@ purchaseSystem.pages = (function(store, actions, renderers, view) {
       view.renderRows(tbody, list, renderProcessRow, { colspan: 9, text: '暂无采购流程记录' });
     }
 
+    // 刷新采购流程列表。
     function refresh() {
       const keyword = view.getTrimmedValue('search-input');
       const status = view.getValue('status-filter');

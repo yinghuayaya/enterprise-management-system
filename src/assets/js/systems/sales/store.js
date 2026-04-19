@@ -12,6 +12,7 @@ salesSystem.store = EnterpriseState.createStore({
     { name: 'pricing', type: 'array' },
     { name: 'team', type: 'array' }
   ],
+  // 提供销售管理子系统的浏览器本地状态默认值。
   getDefaults() {
     const source = typeof salesData !== 'undefined' ? salesData : {};
     return {

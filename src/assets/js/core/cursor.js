@@ -14,6 +14,7 @@ const appCursor = (function() {
     let cursorX = mouseX;
     let cursorY = mouseY;
 
+    // 逐帧追踪鼠标坐标，形成后台页面的品牌化跟随光标。
     function updateCursor() {
       const dx = mouseX - cursorX;
       const dy = mouseY - cursorY;
