@@ -46,7 +46,7 @@
   --font-size-xl: 20px;
   --font-size-xxl: 24px;
 
-  /* 阴影 - 更加平滑柔软的高级感阴影 */
+  /* 阴影 */
   --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);

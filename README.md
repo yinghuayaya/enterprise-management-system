@@ -102,6 +102,7 @@ npm run dev
 - [开发规范](docs/DEV_STANDARDS.md)
 - [文件内容规范](docs/CSS_JS_SPEC.md)
 - [Git 命令大全](docs/GIT_GUIDE.md)
+- [整体分析报告与 4 人团队开发策略](docs/ARCHITECTURE_TEAM_STRATEGY.md)
 
 ---
 

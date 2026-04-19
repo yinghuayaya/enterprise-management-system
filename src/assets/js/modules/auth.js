@@ -4,33 +4,42 @@ const auth = {
   USER_KEY: 'xm_user',
 
   login(username, password) {
-    // 管理员账号
-    if (username === 'admin' && password === '123456') {
-      const user = { username, role: '管理员', loginTime: Date.now() };
-      storage.session.set(this.USER_KEY, user);
-      return true;
+    try {
+      if (username === 'admin' && password === '123456') {
+        const user = { username, role: '管理员', loginTime: Date.now() };
+        storage.session.set(this.USER_KEY, user);
+        return true;
+      }
+    } catch (error) {
+      console.error('auth.login failed:', error);
     }
     return false;
   },
 
   logout() {
-    storage.session.remove(this.USER_KEY);
-    // 退出登录跳转到首页
-    const pathParts = window.location.pathname.split('/');
-    const pagesIndex = pathParts.lastIndexOf('pages');
-    if (pagesIndex !== -1) {
-      // 计算从当前位置到pages目录的路径
-      const depth = pathParts.length - pagesIndex - 2;
-      const relativePath = depth > 0 ? '../'.repeat(depth) : './';
-      // 首页在pages目录下，直接从pages进入
-      window.location.href = relativePath + 'landing.html';
-    } else {
-      window.location.href = 'landing.html';
+    try {
+      storage.session.remove(this.USER_KEY);
+      const pathParts = window.location.pathname.split('/');
+      const pagesIndex = pathParts.lastIndexOf('pages');
+      if (pagesIndex !== -1) {
+        const depth = pathParts.length - pagesIndex - 2;
+        const relativePath = depth > 0 ? '../'.repeat(depth) : './';
+        window.location.href = relativePath + 'landing.html';
+        return;
+      }
+    } catch (error) {
+      console.error('auth.logout failed:', error);
     }
+    window.location.href = 'landing.html';
   },
 
   getUser() {
-    return storage.session.get(this.USER_KEY);
+    try {
+      return storage.session.get(this.USER_KEY);
+    } catch (error) {
+      console.error('auth.getUser failed:', error);
+      return null;
+    }
   },
 
   isLoggedIn() {
@@ -38,30 +47,37 @@ const auth = {
   },
 
   guard() {
-    if (!this.isLoggedIn()) {
-      // 使用相对路径，支持子目录部署
-      const pathParts = window.location.pathname.split('/').filter(Boolean);
-      let depth = 0;
-      for (let i = 0; i < pathParts.length; i++) {
-        if (pathParts[i] === 'pages') {
-          depth = pathParts.length - i - 1;
-          break;
+    try {
+      if (!this.isLoggedIn()) {
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        let depth = 0;
+        for (let i = 0; i < pathParts.length; i += 1) {
+          if (pathParts[i] === 'pages') {
+            depth = pathParts.length - i - 1;
+            break;
+          }
         }
+        const basePath = '../'.repeat(depth > 0 ? depth : 1);
+        window.location.href = basePath + 'pages/login.html';
       }
-      const basePath = '../'.repeat(depth > 0 ? depth : 1);
-      window.location.href = basePath + 'pages/login.html';
+    } catch (error) {
+      console.error('auth.guard failed:', error);
     }
   },
 
   register(username, email, password) {
-    // 模拟注册（实际应调用后端API）
-    const users = storage.local.get('xm_users') || [];
-    const exists = users.some(u => u.username === username || u.email === email);
-    if (exists) {
+    try {
+      const users = storage.get('xm_users') || [];
+      const exists = users.some((user) => user.username === username || user.email === email);
+      if (exists) {
+        return false;
+      }
+      users.push({ username, email, password, regTime: Date.now() });
+      storage.set('xm_users', users);
+      return true;
+    } catch (error) {
+      console.error('auth.register failed:', error);
       return false;
     }
-    users.push({ username, email, password, regTime: Date.now() });
-    storage.local.set('xm_users', users);
-    return true;
   }
 };

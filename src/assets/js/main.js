@@ -1,57 +1,172 @@
 'use strict';
 
-// 导入顺序：utils → modules
-// 各页面按需引入对应 module，main.js 只做全局初始化
+const PUBLIC_PAGES = new Set(['landing.html', 'login.html', 'register.html']);
+const BUSINESS_MODULES = {
+  employee: 'employeeModule',
+  equipment: 'equipmentModule',
+  production: 'productionModule',
+  purchase: 'purchaseModule',
+  sales: 'salesModule',
+  warehouse: 'warehouseModule'
+};
 
-document.addEventListener('DOMContentLoaded', () => {
-  // 非登录页执行鉴权和导航初始化
-  const currentPath = window.location.pathname;
-  const isLoginPage = currentPath.endsWith('login.html') || currentPath.endsWith('register.html');
-  if (!isLoginPage) {
+document.addEventListener('DOMContentLoaded', async () => {
+  const pageMeta = getPageMeta();
+  const isPublicPage = PUBLIC_PAGES.has(pageMeta.pageName);
+
+  if (!isPublicPage && typeof auth !== 'undefined' && !auth.isLoggedIn()) {
     auth.guard();
-    // appNav.init() 在每个页面的 fetch header 回调里执行了，这里可以不强制，但防止遗漏保留
-    if (typeof appNav !== 'undefined') appNav.init();
-    // 初始化移动端导航（侧边栏切换）
-    if (typeof MobileNav !== 'undefined') MobileNav.init();
+    return;
   }
 
-  // 初始化鼠标跟随动效
   initCustomCursor();
-
-  // 监听 DOM 树变化，修正通过 fetch 注入的 header 和 sidebar 的跳转路径
   initPathObserver();
+
+  await loadPageShell(pageMeta);
+  await ensureMobileNav(pageMeta);
+  initSharedNavigation();
+  await initBusinessModule(pageMeta);
 });
+
+function getPageMeta() {
+  const pathParts = window.location.pathname.split('/').filter(Boolean);
+  const pagesIndex = pathParts.indexOf('pages');
+  const pageName = pathParts[pathParts.length - 1] || '';
+
+  if (pagesIndex === -1) {
+    return {
+      pageName,
+      section: '',
+      pagesPath: '',
+      rootPath: ''
+    };
+  }
+
+  const depth = Math.max(0, pathParts.length - pagesIndex - 2);
+  const pagesPath = depth > 0 ? '../'.repeat(depth) : '';
+  const rootPath = pagesPath + '../';
+  const sectionCandidate = pathParts[pagesIndex + 1] || '';
+  const section = sectionCandidate.endsWith('.html') ? '' : sectionCandidate;
+
+  return {
+    pageName,
+    section,
+    pagesPath,
+    rootPath
+  };
+}
+
+async function loadPageShell(pageMeta) {
+  const tasks = [];
+
+  if (document.getElementById('header-placeholder')) {
+    tasks.push(loadComponent('header-placeholder', pageMeta.rootPath + 'components/header.html'));
+  }
+
+  if (document.getElementById('sidebar-placeholder')) {
+    tasks.push(loadComponent('sidebar-placeholder', pageMeta.rootPath + 'components/sidebar.html'));
+  }
+
+  if (document.getElementById('footer-placeholder')) {
+    tasks.push(loadComponent('footer-placeholder', pageMeta.rootPath + 'components/footer.html'));
+  }
+
+  await Promise.all(tasks);
+}
+
+async function loadComponent(placeholderId, url) {
+  const placeholder = document.getElementById(placeholderId);
+  if (!placeholder || placeholder.dataset.loaded === '1') {
+    return;
+  }
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('HTTP ' + response.status);
+    }
+
+    placeholder.innerHTML = await response.text();
+    placeholder.dataset.loaded = '1';
+  } catch (error) {
+    console.error('Failed to load component:', url, error);
+  }
+}
+
+async function ensureMobileNav(pageMeta) {
+  if (!document.getElementById('sidebar-placeholder') && !document.querySelector('.sidebar')) {
+    return;
+  }
+
+  if (typeof MobileNav !== 'undefined') {
+    return;
+  }
+
+  await loadScript(pageMeta.rootPath + 'assets/js/modules/mobile-nav.js', 'mobile-nav');
+}
+
+function initSharedNavigation() {
+  if (typeof appNav !== 'undefined') {
+    appNav.init();
+  }
+
+  if (typeof MobileNav !== 'undefined') {
+    MobileNav.init();
+  }
+}
+
+async function initBusinessModule(pageMeta) {
+  const moduleGlobal = BUSINESS_MODULES[pageMeta.section];
+  if (!moduleGlobal) {
+    return;
+  }
+
+  if (typeof window[moduleGlobal] === 'undefined') {
+    await loadScript(pageMeta.rootPath + 'assets/js/modules/' + pageMeta.section + '.js', pageMeta.section);
+  }
+
+  const moduleApi = window[moduleGlobal];
+  if (moduleApi && typeof moduleApi.init === 'function') {
+    moduleApi.init();
+  }
+}
+
+function loadScript(src, key) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector('script[data-runtime-script="' + key + '"]')) {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = src;
+    script.dataset.runtimeScript = key;
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('Failed to load script: ' + src));
+    document.body.appendChild(script);
+  });
+}
 
 function initPathObserver() {
   function fixComponentPaths() {
-    const pathParts = window.location.pathname.split('/');
-    const pagesIndex = pathParts.lastIndexOf('pages');
-    if (pagesIndex === -1) return;
+    const pageMeta = getPageMeta();
+    if (!pageMeta.rootPath && !pageMeta.pagesPath) return;
 
-    const depth = Math.max(0, pathParts.length - pagesIndex - 2);
-    const pagesPath = depth > 0 ? '../'.repeat(depth) : '';
-    const rootPath = pagesPath + '../';
-
-    // 修复 Header Logo 路径
     const logoImg = document.getElementById('header-logo-img');
     if (logoImg && !logoImg.dataset.fixed) {
-      logoImg.style.display = '';  // Reset display FIRST
-      logoImg.dataset.fixed = '1';  // Mark as fixed
-      // Delay src change to allow onerror handler to work
+      logoImg.style.display = '';
+      logoImg.dataset.fixed = '1';
       setTimeout(() => {
-        logoImg.src = rootPath + 'assets/images/logo.png';
+        logoImg.src = pageMeta.rootPath + 'assets/images/logo.png';
       }, 0);
     }
 
-    // 修复侧边栏导航路径并绑定点击事件
     const sidebarItems = document.querySelectorAll('.sidebar-item[data-page]:not([data-fixed])');
-    sidebarItems.forEach(item => {
+    sidebarItems.forEach((item) => {
       const targetPage = item.getAttribute('data-page');
-      const fixedHref = pagesPath + targetPage;
+      const fixedHref = pageMeta.pagesPath + targetPage;
       item.setAttribute('href', fixedHref);
       item.dataset.fixed = '1';
-
-      // 确保链接可点击（href 属性已修复，无需额外跳转）
     });
   }
 
