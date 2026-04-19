@@ -47,6 +47,37 @@ const PAGE_EXTRA_UTILS = {
   register: ['validate']
 };
 
+const SCRIPT_READY_TIMEOUT = 15000;
+
+/**
+ * 根据脚本标识返回运行时就绪探测函数。
+ * @param {string} key data-runtime-script 去重标识。
+ * @returns {Function|undefined} 对应脚本执行完成时返回 true 的探测函数。
+ *
+ * 原因：部分 CDN/浏览器组合可能出现动态脚本已执行但 load 事件迟迟不触发，探测全局注册结果可以避免启动链路卡死。
+ */
+function getRuntimeReadyCheck(key) {
+  const checks = {
+    'utils-dom': () => typeof $ === 'function' && typeof $$ === 'function',
+    'utils-storage': () => typeof storage !== 'undefined',
+    'utils-format': () => typeof formatDate === 'function' && typeof formatNumber === 'function',
+    'utils-validate': () => typeof validateForm === 'function',
+    'core-module-loader': () => !!window.appScriptLoader,
+    'core-router': () => !!window.appRouter,
+    'core-shell': () => !!window.appShell,
+    'core-cursor': () => !!window.appCursor,
+    'core-auth': () => !!window.auth,
+    'core-navigation': () => !!window.appNav
+  };
+
+  if (key.startsWith('page-')) {
+    const pageName = key.replace('page-', '');
+    return () => !!(window.appPages && window.appPages[pageName]);
+  }
+
+  return checks[key];
+}
+
 /**
  * 加载页面和业务都依赖的基础工具。
  * @param {string} rootPath 当前页面回到 src 根目录的相对路径。
@@ -162,16 +193,71 @@ function initPageController(controllerName) {
  */
 function loadRuntimeScript(src, key) {
   return new Promise((resolve, reject) => {
-    if (document.querySelector('script[data-runtime-script="' + key + '"]')) {
-      resolve();
+    const readyCheck = getRuntimeReadyCheck(key);
+    const existing = document.querySelector('script[data-runtime-script="' + key + '"]');
+    let settled = false;
+    let readyTimer = null;
+    let timeoutTimer = null;
+
+    function finish(callback, value) {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      if (readyTimer) clearInterval(readyTimer);
+      if (timeoutTimer) clearTimeout(timeoutTimer);
+      callback(value);
+    }
+
+    function isReady() {
+      try {
+        return !!(readyCheck && readyCheck());
+      } catch {
+        return false;
+      }
+    }
+
+    function watchReady(script) {
+      if (!readyCheck) {
+        return;
+      }
+
+      if (isReady()) {
+        finish(resolve);
+        return;
+      }
+
+      readyTimer = setInterval(() => {
+        if (isReady()) {
+          finish(resolve);
+        }
+      }, 50);
+
+      timeoutTimer = setTimeout(() => {
+        finish(reject, new Error('Timed out waiting for script runtime: ' + src));
+      }, SCRIPT_READY_TIMEOUT);
+
+      script.addEventListener('load', () => finish(resolve));
+      script.addEventListener('error', () => finish(reject, new Error('Failed to load script: ' + src)));
+    }
+
+    if (existing) {
+      if (!readyCheck || isReady()) {
+        resolve();
+        return;
+      }
+
+      watchReady(existing);
       return;
     }
 
     const script = document.createElement('script');
     script.src = src;
     script.dataset.runtimeScript = key;
-    script.onload = resolve;
-    script.onerror = () => reject(new Error('Failed to load script: ' + src));
+    script.onload = () => finish(resolve);
+    script.onerror = () => finish(reject, new Error('Failed to load script: ' + src));
+    watchReady(script);
     document.body.appendChild(script);
   });
 }
