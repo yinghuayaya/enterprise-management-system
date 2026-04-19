@@ -4,6 +4,22 @@ const appRouter = (function() {
   const PUBLIC_PAGES = new Set(['landing.html', 'login.html', 'register.html']);
 
   /**
+   * 将 URL 最后一段统一规范为页面文件名。
+   * @param {string} pageName 原始页面名或路径最后一段。
+   * @returns {string} 规范化后的页面文件名。
+   */
+  function normalizePageName(pageName) {
+    const raw = String(pageName || '').trim().replace(/\/+$/, '');
+
+    if (!raw) {
+      return '';
+    }
+
+    const lastSegment = raw.split('/').pop() || '';
+    return lastSegment.includes('.') ? lastSegment : `${lastSegment}.html`;
+  }
+
+  /**
    * 从当前 URL 解析页面名、业务域和资源路径。
    * @returns {{pageName: string, section: string, pagesPath: string, rootPath: string}} 页面运行时元信息。
    *
@@ -12,7 +28,8 @@ const appRouter = (function() {
   function getPageMeta() {
     const pathParts = window.location.pathname.split('/').filter(Boolean);
     const pagesIndex = pathParts.indexOf('pages');
-    const pageName = pathParts[pathParts.length - 1] || '';
+    const rawPageName = pathParts[pathParts.length - 1] || '';
+    const pageName = normalizePageName(rawPageName);
 
     if (pagesIndex === -1) {
       return {
@@ -43,7 +60,7 @@ const appRouter = (function() {
    * @returns {boolean} 公开页返回 true，后台业务页返回 false。
    */
   function isPublicPage(pageMeta) {
-    return PUBLIC_PAGES.has(pageMeta.pageName);
+    return PUBLIC_PAGES.has(normalizePageName(pageMeta.pageName));
   }
 
   /**

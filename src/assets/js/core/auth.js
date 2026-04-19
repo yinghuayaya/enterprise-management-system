@@ -85,21 +85,33 @@ const auth = {
    */
   guard() {
     try {
-      if (!this.isLoggedIn()) {
-        const pathParts = window.location.pathname.split('/').filter(Boolean);
-        let depth = 0;
-        for (let i = 0; i < pathParts.length; i += 1) {
-          if (pathParts[i] === 'pages') {
-            depth = pathParts.length - i - 2;
-            break;
-          }
-        }
-        const pagesPath = depth > 0 ? '../'.repeat(depth) : './';
-        const loginUrl = pagesPath + 'login.html';
-        if (!window.location.pathname.endsWith('/login.html')) {
-          window.location.replace(loginUrl);
+      if (this.isLoggedIn()) {
+        return;
+      }
+
+      const normalizedPath = window.location.pathname.replace(/\/+$/, '');
+      const isLoginPage =
+        normalizedPath.endsWith('/login') ||
+        normalizedPath.endsWith('/login.html');
+
+      if (isLoginPage) {
+        return;
+      }
+
+      const pathParts = window.location.pathname.split('/').filter(Boolean);
+      let depth = 0;
+
+      for (let i = 0; i < pathParts.length; i += 1) {
+        if (pathParts[i] === 'pages') {
+          depth = pathParts.length - i - 2;
+          break;
         }
       }
+
+      const pagesPath = depth > 0 ? '../'.repeat(depth) : './';
+      const loginUrl = pagesPath + 'login.html';
+
+      window.location.replace(loginUrl);
     } catch (error) {
       console.error('auth.guard failed:', error);
     }

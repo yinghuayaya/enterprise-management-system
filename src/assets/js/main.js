@@ -71,7 +71,8 @@ async function loadUtilityRuntime(rootPath) {
 function getInitialPageMeta() {
   const pathParts = window.location.pathname.split('/').filter(Boolean);
   const pagesIndex = pathParts.indexOf('pages');
-  const pageName = pathParts[pathParts.length - 1] || '';
+  const lastSegment = pathParts[pathParts.length - 1] || 'index.html';
+  const pageName = lastSegment.includes('.') ? lastSegment : `${lastSegment}.html`;
 
   if (pagesIndex === -1) {
     return {
