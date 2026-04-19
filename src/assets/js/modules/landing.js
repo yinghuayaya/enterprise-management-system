@@ -1,20 +1,31 @@
 'use strict';
-const landing = (function() {
+const landing = (function () {
   /**
-   * 绑定落地页锚点平滑滚动。
+   * 处理单个锚点链接的点击事件。
+   * @param {Event} e 浏览器传入的点击事件对象；this 指向被点击的 a 标签。
+   * @returns {void}
+   *
+   * 原因：拦截浏览器默认的瞬间跳转，改为平滑滚动到目标位置，提升用户体验。
+   */
+  function handleAnchorClick(e) {
+    e.preventDefault();
+    const targetId = this.getAttribute('href');
+    const target = document.querySelector(targetId);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  /**
+   * 批量为页面上所有锚点链接绑定平滑滚动事件。
    * @returns {void}
    *
    * 原因：前台展示页使用单页锚点导航，阻止默认跳转可以保留平滑滚动体验。
    */
   function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function(e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      });
+    const anchors = document.querySelectorAll('a[href^="#"]');
+    anchors.forEach(anchor => {
+      anchor.addEventListener('click', handleAnchorClick);
     });
   }
 
@@ -27,8 +38,8 @@ const landing = (function() {
   function initNavbarScroll() {
     const navbar = document.getElementById('navbar');
     if (!navbar) return;
-    
-    window.addEventListener('scroll', function() {
+
+    window.addEventListener('scroll', function () {
       if (window.scrollY > 50) {
         navbar.classList.add('navbar-scrolled');
       } else {
@@ -44,16 +55,16 @@ const landing = (function() {
   function initMobileMenu() {
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
-    
+
     if (!mobileMenuBtn || !mobileMenu) return;
-    
-    mobileMenuBtn.addEventListener('click', function() {
+
+    mobileMenuBtn.addEventListener('click', function () {
       mobileMenu.classList.toggle('active');
     });
-    
+
     // 链接点击后收起菜单，避免移动端菜单遮挡滚动到的目标区块。
     document.querySelectorAll('.mobile-menu-nav a').forEach(link => {
-      link.addEventListener('click', function() {
+      link.addEventListener('click', function () {
         mobileMenu.classList.remove('active');
       });
     });
@@ -71,7 +82,7 @@ const landing = (function() {
         if (entry.isIntersecting) {
           // 不同展示块使用不同动画节奏，保持统计、技术、产品和伙伴区的视觉层次。
           const element = entry.target;
-          
+
           if (element.classList.contains('hero-container')) {
             element.classList.add('fade-in');
           } else if (element.classList.contains('stat-card')) {
@@ -92,12 +103,12 @@ const landing = (function() {
           } else if (element.classList.contains('cta')) {
             element.classList.add('slide-up');
           }
-          
+
           // 动画只触发一次，避免用户来回滚动时重复闪烁。
           observer.unobserve(element);
         }
       });
-    }, { 
+    }, {
       threshold: 0.1,
       rootMargin: '0px 0px -50px 0px'
     });
@@ -115,7 +126,7 @@ const landing = (function() {
      *
      * 原因：落地页不进入后台业务模块加载链路，脚本在页面底部直接运行。
      */
-    init: function() {
+    init: function () {
       initSmoothScroll();
       initNavbarScroll();
       initMobileMenu();
@@ -124,6 +135,6 @@ const landing = (function() {
   };
 })();
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   landing.init();
 });
