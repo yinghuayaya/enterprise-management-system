@@ -128,37 +128,21 @@
   animation-delay: 0s;
 }
 
-.delay-100 {
-  animation-delay: 0.1s;
-}
+.delay-100 { animation-delay: 0.15s; }
 
-.delay-200 {
-  animation-delay: 0.2s;
-}
+.delay-200 { animation-delay: 0.3s; }
 
-.delay-300 {
-  animation-delay: 0.3s;
-}
+.delay-300 { animation-delay: 0.45s; }
 
-.delay-400 {
-  animation-delay: 0.4s;
-}
+.delay-400 { animation-delay: 0.6s; }
 
-.delay-500 {
-  animation-delay: 0.5s;
-}
+.delay-500 { animation-delay: 0.75s; }
 
-.delay-600 {
-  animation-delay: 0.6s;
-}
+.delay-600 { animation-delay: 0.9s; }
 
-.delay-700 {
-  animation-delay: 0.7s;
-}
+.delay-700 { animation-delay: 1.05s; }
 
-.delay-800 {
-  animation-delay: 0.8s;
-}
+.delay-800 { animation-delay: 1.2s; }
 
 /* 展示特效关键帧：为打字光标、进度条、光扫、网格和卡片入场提供复用动画。 */
 @keyframes cursorBlink {
@@ -236,4 +220,44 @@
     transform: translateY(0) scale(1);
     filter: blur(0);
   }
+}
+
+
+/* =====================
+   主题流光入场特效 (Theme Shine)
+   为业务展示卡片增加“扫光”的动感科技效果。利用伪元素及 animation-delay 继承机制实现。
+   不包含 founder-card 以免与其专属的 hover 伪元素冲突。
+   ===================== */
+.stat-card, .tech-card, .product-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::after, .tech-card::after, .product-card::after {
+  content: "";
+  position: absolute;
+  top: 0; 
+  left: -150%; 
+  width: 50%; 
+  height: 100%;
+  background: linear-gradient(
+    to right, 
+    rgba(255, 107, 0, 0) 0%, 
+    rgba(255, 107, 0, 0.25) 50%, 
+    rgba(255, 107, 0, 0) 100%
+  );
+  transform: skewX(-25deg);
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* 当卡片被赋予入场动画类时，一同触发流光动画。 */
+.slide-up::after, .scale-in::after {
+  animation: themeShine 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  animation-delay: inherit; 
+}
+
+@keyframes themeShine {
+  0% { left: -150%; }
+  100% { left: 200%; }
 }
