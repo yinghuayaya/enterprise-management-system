@@ -1,6 +1,19 @@
 'use strict';
 const landing = (function () {
   /**
+   * 批量为页面上所有锚点链接绑定平滑滚动事件。
+   * @returns {void}
+   *
+   * 原因：前台展示页使用单页锚点导航，阻止默认跳转可以保留平滑滚动体验。
+   */
+  function initSmoothScroll() {
+    const anchors = document.querySelectorAll('a[href^="#"]');
+    anchors.forEach(anchor => {
+      anchor.addEventListener('click', handleAnchorClick);
+    });
+  }
+
+  /**
    * 处理单个锚点链接的点击事件。
    * @param {Event} e 浏览器传入的点击事件对象；this 指向被点击的 a 标签。
    * @returns {void}
@@ -16,37 +29,6 @@ const landing = (function () {
     }
   }
 
-  /**
-   * 批量为页面上所有锚点链接绑定平滑滚动事件。
-   * @returns {void}
-   *
-   * 原因：前台展示页使用单页锚点导航，阻止默认跳转可以保留平滑滚动体验。
-   */
-  function initSmoothScroll() {
-    const anchors = document.querySelectorAll('a[href^="#"]');
-    anchors.forEach(anchor => {
-      anchor.addEventListener('click', handleAnchorClick);
-    });
-  }
-
-  /**
-   * 根据滚动位置切换落地页导航栏状态。
-   * @returns {void}
-   *
-   * 原因：首屏背景图较暗，滚动离开首屏后需要半透明背景提升导航可读性。
-   */
-  function initNavbarScroll() {
-    const navbar = document.getElementById('navbar');
-    if (!navbar) return;
-
-    window.addEventListener('scroll', function () {
-      if (window.scrollY > 50) {
-        navbar.classList.add('navbar-scrolled');
-      } else {
-        navbar.classList.remove('navbar-scrolled');
-      }
-    });
-  }
 
   /**
    * 控制落地页移动端菜单展开与收起。
@@ -128,7 +110,7 @@ const landing = (function () {
      */
     init: function () {
       initSmoothScroll();
-      initNavbarScroll();
+
       initMobileMenu();
       initAnimations();
     }
