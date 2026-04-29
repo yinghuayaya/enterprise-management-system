@@ -21,6 +21,17 @@
 
       <div class="stats-grid" id="stats-grid"></div>
 
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:var(--spacing-lg);margin-top:var(--spacing-lg)">
+        <div class="card">
+          <div class="card-header"><div class="card-title">订单状态分布</div></div>
+          <div style="height:260px;padding:16px"><canvas id="order-status-chart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">计划进度概览</div></div>
+          <div style="height:260px;padding:16px"><canvas id="plan-progress-chart"></canvas></div>
+        </div>
+      </div>
+
       <div class="dashboard-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--spacing-md);margin-top:var(--spacing-lg)">
         <a href="plan.html" class="stat-card" style="text-decoration:none">
           <div class="stat-icon">📅</div>
